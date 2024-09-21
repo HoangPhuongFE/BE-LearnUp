@@ -1,0 +1,79 @@
+# Node.js dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Debugger configurations
+.vs/
+
+# Optional npm cache directory
+.npm/
+
+# Jest coverage reports
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Swagger auto-generated files (if any)
+swagger.json
+swagger.yaml
+
+# pm2 logs (if using pm2 for process management)
+.pids
+logs/
+
+# Sentry configuration files
+.sentryclirc
+
+# Build artifacts
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Parcel-bundler cache (if using Parcel)
+.cache/
+
+# dotenv environment variable files
+.env.test
+.env.production
+
+# Mac specific file
+.AppleDouble
+.LSOverride
+
+# Other files
+*.swp
