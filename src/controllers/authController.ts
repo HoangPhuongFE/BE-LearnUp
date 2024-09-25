@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { createUser, loginUser, createResetPasswordToken, resetUserPassword, findUserByEmail } from '../services/authService';
 import sendEmail from '../utils/sendEmail';
 import generateToken from '../utils/generateToken';
-import User from '../models/User'; 
+import User from '../models/User';
 import crypto from 'crypto';
 
 // Đăng ký người dùng
@@ -51,13 +51,13 @@ export const forgetPassword = async (req: Request, res: Response) => {
     const user = await findUserByEmail(email);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Không tìm thấy người dùng' });
     }
 
     const resetToken = await createResetPasswordToken(user);
     const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
-    const message = `You are receiving this email because you requested the reset of a password.
-     Please click the following link to reset your password: \n\n ${resetUrl}`;
+    const message = `Bạn nhận được email này vì bạn đã yêu cầu đặt lại mật khẩu.
+Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạn: \n\n ${resetUrl}`;
 
     await sendEmail(user.email, 'Password reset', message);
 
@@ -80,16 +80,16 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Mã thông báo không hợp lệ hoặc đã hết hạn' });
     }
 
-    console.log('User found for password reset:', user.email);
+    // console.log('Đã tìm thấy người dùng để đặt lại mật khẩu:', user.email);
 
     // Đặt lại mật khẩu mới
     const newPassword = req.body.password;
     await resetUserPassword(user, newPassword);
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: 'Mật khẩu đã được cập nhật thành công' });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
   }

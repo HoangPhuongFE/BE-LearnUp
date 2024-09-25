@@ -65,7 +65,7 @@ export const resetUserPassword = async (user: any, newPassword: string) => {
   
   // Mã hóa mật khẩu mới
   user.password = await bcrypt.hash(newPassword, salt);
-  console.log('New hashed password before saving:', user.password);  // Log mật khẩu đã mã hóa
+ // console.log('New hashed password before saving:', user.password);  // Log mật khẩu đã mã hóa
 
   // Hủy token reset mật khẩu
   user.resetPasswordToken = undefined;

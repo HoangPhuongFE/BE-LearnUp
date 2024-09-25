@@ -9,7 +9,7 @@ export const createStaff = async (req: Request, res: Response) => {
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'Tài Khoản đã tồn tại ' });
     }
 
     const staff = new User({
@@ -29,7 +29,7 @@ export const createStaff = async (req: Request, res: Response) => {
       token: generateToken(staff._id.toString()),
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating staff' });
+    res.status(500).json({ message: 'Lỗi khi tạo nhân viên' });
   }
 };
 
