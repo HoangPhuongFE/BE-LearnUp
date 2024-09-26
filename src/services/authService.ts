@@ -33,8 +33,8 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error('Invalid email or password');
   }
 
-  console.log('Stored password hash:', user.password);  // Log mật khẩu đã mã hóa trong DB
-  console.log('Entered password:', password);  // Log mật khẩu đã nhập vào
+ // console.log('Stored password hash:', user.password);  // Log mật khẩu đã mã hóa trong DB
+  //console.log('Entered password:', password);  // Log mật khẩu đã nhập vào
   
   // So sánh mật khẩu đã nhập với mật khẩu đã mã hóa trong DB
   const isMatch = await bcrypt.compare(password, user.password);
