@@ -5,20 +5,21 @@ import {
   updateResource,
   deleteResource,
 } from '../controllers/resourceController';
-import { protect, admin } from '../middlewares/authMiddleware';
+import { protect } from '../middlewares/authMiddleware';
 
+import { checkPermission } from '../middlewares/permissionMiddleware';
 const router = express.Router();
 
 // Tạo tài liệu mới cho môn học
-router.post('/:subjectId/resources', protect, admin, addResourceToSubject);
+router.post('/:subjectId/resources',checkPermission ('manage_resources'), protect, addResourceToSubject);
 
 // Lấy danh sách tài liệu của môn học với phân trang
 router.get('/:subjectId/resources', protect, getResourcesForSubject);
 
 // Cập nhật tài liệu
-router.put('/:id', protect, admin, updateResource);
+router.put('/:id', protect,checkPermission ('manage_resources'), updateResource);
 
 // Xóa tài liệu
-router.delete('/:id', protect, admin, deleteResource);
+router.delete('/:id', protect,checkPermission ('manage_resources'), deleteResource);
 
 export default router;

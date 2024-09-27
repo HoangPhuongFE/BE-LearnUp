@@ -1,76 +1,124 @@
 
 import { Request, Response } from 'express';
 import User from '../models/User';
-import generateToken from '../utils/generateToken';
 
-export const createStaff = async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
+// controllers/adminController.ts
 
+export const getUsers = async (req: Request, res: Response) => {
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Tài Khoản đã tồn tại ' });
-    }
+    const pageSize = Number(req.query.pageSize) || 10; // Số lượng người dùng mỗi trang
+    const page = Number(req.query.pageNumber) || 1;    // Trang hiện tại
 
-    const staff = new User({
-      name,
-      email,
-      password, 
-      role
-    });
-
-    await staff.save();
-
-    res.status(201).json({
-      _id: staff._id,
-      name: staff.name,
-      email: staff.email,
-      role: staff.role,
-      token: generateToken(staff._id.toString()),
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi tạo nhân viên' });
-  }
-};
-
-
-
-export const updateStaffRoles = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { role } = req.body;
-  
-    try {
-      const staff = await User.findByIdAndUpdate(id, { role }, { new: true, runValidators: true });
-      if (!staff) {
-        return res.status(404).json({ message: 'Staff not found' });
+    const keyword = req.query.keyword
+      ? {
+        name: { $regex: req.query.keyword, $options: 'i' },
       }
-  
-      res.json({
-        _id: staff._id,
-        name: staff.name,
-        email: staff.email,
-        role: staff.role
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Error updating staff roles' });
-    }
-  };
+      : {};
 
+    const count = await User.countDocuments({ ...keyword });
+    const users = await User.find({ ...keyword })
+      .select('-password')
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
 
-
-export const deleteStaff = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  try {
-    const staff = await User.findByIdAndDelete(id);
-    if (!staff) {
-      return res.status(404).json({ message: 'Staff not found' });
-    }
-
-    res.status(200).json({ message: 'Staff deleted successfully' });
+    res.status(200).json({
+      message: 'Lấy danh sách người dùng thành công',
+      users,
+      page,
+      pages: Math.ceil(count / pageSize),
+      total: count,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting staff' });
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng', error: error.message });
+    } else {
+      res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
+    }
   }
 };
 
+// Update user roles and permissions
+export const updateUserRoleAndPermissions = async (req: Request, res: Response) => {
+  const { id } = req.params; // User ID
+  const { role, permissions } = req.body;
 
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (role) {
+      user.role = role;
+    }
+
+    if (permissions) {
+      user.permissions = permissions;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'User role and permissions updated successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        permissions: user.permissions,
+      },
+    });
+  } catch (error) {
+    // Fix starts here
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Error updating user role and permissions', error: error.message });
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' });
+    }
+  }
+};
+
+// Delete user
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params; // User ID
+
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Error deleting user', error: error.message });
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' });
+    }
+  }
+};
+
+// Upgrade user to premium
+export const upgradeToPremium = async (req: Request, res: Response) => {
+  const { id } = req.params; // User ID
+
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.role = 'member_premium';
+    await user.save();
+
+    res.status(200).json({
+      message: 'User upgraded to premium successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Error upgrading user to premium', error: error.message });
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' });
+    }
+  }
+};

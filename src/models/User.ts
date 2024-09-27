@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: 'admin' | 'staff' | 'member_free' | 'member_premium';
+  permissions?: string[];
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
@@ -32,6 +33,11 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     enum: ['admin', 'staff', 'member_free', 'member_premium'],
     default: 'member_free',
   },
+  permissions: {
+    type: [String],
+    default: [], 
+  },
+
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

@@ -1,15 +1,25 @@
-// File: routes/adminRoutes.ts
 
 import express from 'express';
-import { createStaff, updateStaffRoles, deleteStaff } from '../controllers/adminController';
-import { protect, admin } from '../middlewares/authMiddleware'; 
+import {getUsers,
+  updateUserRoleAndPermissions,
+  deleteUser,
+  upgradeToPremium,
+} from '../controllers/adminController';
+import { protect } from '../middlewares/authMiddleware';
+import { checkPermission } from '../middlewares/permissionMiddleware';
 
 const router = express.Router();
 
-router.post('/staff/create', protect, admin, createStaff);
-router.put('/staff/:id', protect, admin, updateStaffRoles);
-router.delete('/staff/:id', protect, admin, deleteStaff);
+// Lấy danh sách người dùng
+router.get('/users', protect, checkPermission('manage_users'), getUsers);
 
+// Cập nhật vai trò và quyền của người dùng
+router.put('/user/:id', protect, checkPermission('manage_users'), updateUserRoleAndPermissions);
 
+// Xóa người dùng
+router.delete('/user/:id', protect, checkPermission('manage_users'), deleteUser);
+
+// Nâng cấp tài khoản từ free lên premium
+router.put('/user/:id/upgrade', protect, checkPermission('manage_users'), upgradeToPremium);
 
 export default router;
