@@ -1,13 +1,6 @@
-
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import User, { IUser } from '../models/User';
-
-interface UserPayload {
-  id: string;
-  role: string;
-  permissions: string[];
-}
 
 export interface AuthRequest extends Request {
   user?: IUser;
@@ -30,7 +23,7 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
       return res.status(401).json({ message: 'Người dùng không tồn tại' });
     }
 
-    req.user = user;
+    req.user = user;  // Gán user vào request
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token không hợp lệ' });
