@@ -6,14 +6,8 @@ import semesterRoutes from './routes/semesterRoutes';
 import subjectRoutes from './routes/subjectRoutes';
 import resourceRoutes from './routes/resourceRoutes';
 import postRoutes from './routes/postRoutes';
-import commetRoutes from './routes/commentRoutes';
+import commentRoutes from './routes/commentRoutes';
 import likeRoutes from './routes/likeRoutes';
-
-
-
-
-
-
 
 
 
@@ -34,8 +28,20 @@ app.use('/api/semesters', semesterRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/posts', postRoutes);
-app.use('/api/comments', commetRoutes);
+app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
+// 
+
+// Thêm route cho đường dẫn gốc '/'
+app.get('/', (req, res) => {
+    res.send('Welcome to LearnUp API');
+  });
+  
+  // Thêm catch-all route cho các yêu cầu không xác định
+  app.use((req, res) => {
+    res.status(404).send('Page not found');
+  });
+  
 
 
 

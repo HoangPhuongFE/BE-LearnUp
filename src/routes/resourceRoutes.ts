@@ -11,7 +11,7 @@ import { checkPermission } from '../middlewares/permissionMiddleware';
 const router = express.Router();
 
 // Tạo tài liệu mới cho môn học
-router.post('/:subjectId/resources',checkPermission ('manage_resources'), protect, addResourceToSubject);
+router.post('/:subjectId/resources',protect,checkPermission ('manage_resources'), addResourceToSubject);
 
 // Lấy danh sách tài liệu của môn học với phân trang
 router.get('/:subjectId/resources', protect, getResourcesForSubject);

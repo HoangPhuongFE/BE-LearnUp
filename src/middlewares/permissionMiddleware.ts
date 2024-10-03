@@ -5,9 +5,11 @@ import { AuthRequest } from './authMiddleware';
 export const checkPermission = (requiredPermission: string) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     const user = req.user;
+    console.log(user); // In ra thông tin user để kiểm tra role và permissions
 
     // Nếu là admin, bỏ qua kiểm tra quyền
     if (user?.role === 'admin') {
+      console.log('Admin detected, skipping permission check');
       return next();
     }
 

@@ -4,7 +4,7 @@ import { createPost, getPosts, updatePost, deletePost , searchPosts } from '../c
 
 const router = express.Router();
 
-router.post('/', protect, createPost);
+router.post('/', protect, createPost) ;
 router.get('/', protect, getPosts);
 router.put('/:postId', protect, updatePost);
 router.delete('/:postId', protect, deletePost);

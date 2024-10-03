@@ -69,6 +69,7 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 };
 
+
 // Tìm kiếm bài viết
 export const searchPosts = async (req: Request, res: Response) => {
   const { query, tags } = req.query; // Query và tags từ request query

@@ -8,13 +8,15 @@ export interface AuthRequest extends Request {
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   let token: string | undefined;
-
+  
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   } else {
     return res.status(401).json({ message: 'Không có token, không được phép truy cập' });
   }
-
+  const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+  console.log(decoded); // In ra payload của token để kiểm tra role và permissions
+  
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
