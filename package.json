@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@types/fuzzy-search": "^2.1.5",
+    "@types/socket.io": "^3.0.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",

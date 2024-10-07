@@ -9,7 +9,8 @@ import resourceRoutes from './routes/resourceRoutes';
 import postRoutes from './routes/postRoutes';
 import commentRoutes from './routes/commentRoutes';
 import likeRoutes from './routes/likeRoutes';
-
+import ratingRoutes from './routes/ratingRoutes';
+//import notificationRoutes from './routes/notificationRoutes';
 
 
 import connectDB from './config/database';
@@ -31,7 +32,9 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
-// 
+app.use('/api/rating', ratingRoutes);
+//app.use('/api', notificationRoutes);
+
 
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {

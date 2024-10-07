@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import * as CommentService from '../services/commentService';
+import Comment from '../models/Comment';
+
 
 // Tạo bình luận mới
 export const createComment = async (req: Request, res: Response) => {
@@ -66,6 +68,39 @@ export const deleteComment = async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Error deleting comment', error: error.message });
     } else {
       res.status(500).json({ message: 'Unknown error occurred' });
+    }
+  }
+};
+
+
+
+
+
+export const addCommentWithImage = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+  const { content, imageUrls } = req.body;  // FE gửi imageUrls (các URL của file đã tải lên Cloudinary)
+  const userId = req.user ? req.user._id : null;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    // Lưu bình luận với URLs đã nhận từ FE
+    const newComment = new Comment({
+      postId,
+      authorId: userId,
+      content,
+      images: imageUrls,  // Lưu URL ảnh mà FE đã gửi
+    });
+
+    await newComment.save();
+    res.status(201).json(newComment);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
     }
   }
 };

@@ -3,8 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IResource extends Document {
   title: string;
   description?: string;
-  fileUrls: string[];
-  type: 'pdf' | 'video' | 'document';
+  fileUrls ?: string[];
+  type ? : 'pdf' | 'video' | 'document';
   allowedRoles?: ('member_free' | 'member_premium')[]; // Không bắt buộc
 }
 

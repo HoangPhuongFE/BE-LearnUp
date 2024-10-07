@@ -9,4 +9,6 @@ router.get('/posts/:postId', protect, getCommentsByPost);
 router.put('/:commentId', protect, updateComment);
 router.delete('/:commentId', protect, deleteComment);
 
+
+
 export default router;
