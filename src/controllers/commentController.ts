@@ -75,7 +75,7 @@ export const deleteComment = async (req: Request, res: Response) => {
 
 
 
-
+// Thêm bình luận với ảnh 
 export const addCommentWithImage = async (req: Request, res: Response) => {
   const { postId } = req.params;
   const { content, imageUrls } = req.body;  // FE gửi imageUrls (các URL của file đã tải lên Cloudinary)
