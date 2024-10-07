@@ -1,3 +1,4 @@
+// app.ts
 import express from 'express';
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';

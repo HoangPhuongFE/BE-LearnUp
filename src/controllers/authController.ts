@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, loginUser, createResetPasswordToken, resetUserPassword, findUserByEmail } from '../services/authService';
+import { createUser, loginUser, createResetPasswordToken, resetUserPassword, findUserByEmail , updateUserService , getUserByIdService } from '../services/authService';
 import sendEmail from '../utils/sendEmail';
 import generateToken from '../utils/generateToken';
 import User from '../models/User';
@@ -95,3 +95,42 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+
+// Cập nhật thông tin người dùng
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const data = req.body;
+
+    const updatedUser = await updateUserService(userId, data);
+
+    res.status(200).json({ message: 'Người Dùng Cập Nhật Thành Congo ', user: updatedUser });
+  } catch (error) {
+    if (error instanceof Error) {
+      // Nếu error là instance của Error, truy cập vào message
+      res.status(500).json({ message: 'Error updating user', error: error.message });
+    } else {
+      // Xử lý lỗi khác
+      res.status(500).json({ message: 'Error updating user', error: 'Unknown error' });
+    }
+  }
+};
+
+// Lấy thông tin người dùng
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await getUserByIdService(userId);
+
+    res.status(200).json({ user });
+  } catch (error) {
+    if (error instanceof Error) {
+      // Nếu error là instance của Error, truy cập vào message
+      res.status(500).json({ message: 'Error retrieving user', error: error.message });
+    } else {
+      // Xử lý lỗi khác
+      res.status(500).json({ message: 'Error retrieving user', error: 'Unknown error' });
+    }
+  }
+};

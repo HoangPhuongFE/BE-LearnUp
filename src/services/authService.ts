@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import User from '../models/User';
+import User ,{IUser} from '../models/User';
 import crypto from 'crypto';
 
 // Tìm người dùng qua email
@@ -75,4 +75,31 @@ export const resetUserPassword = async (user: any, newPassword: string) => {
   await user.save()
     .then(() => console.log('Password has been saved to the database'))
     .catch((err: unknown) => console.log('Error saving password to the database:', err));
+};
+
+// Cập nhật thông tin người dùng
+
+export const updateUserService = async (userId: string, data: any): Promise<IUser | null> => {
+  try {
+    // Cập nhật thông tin người dùng bằng Mongoose
+    const updatedUser = await User.findByIdAndUpdate(userId, data, { new: true });
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+    return updatedUser;
+  } catch (error) {
+    throw new Error('Error updating user');
+  }
+};
+
+export const getUserByIdService = async (userId: string): Promise<IUser | null> => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  } catch (error) {
+    throw new Error('Error retrieving user');
+  }
 };
