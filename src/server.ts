@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { setupSocket } from './socket/socket';
 
 // Tạo HTTP server
-const PORT = process.env.PORT || 8082;
+const PORT = process.env.PORT || 8080;
 const httpServer = require('http').createServer(app);
 
 // Tạo server Socket.IO
