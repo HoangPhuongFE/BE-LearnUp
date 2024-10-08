@@ -77,3 +77,6 @@ logs/
 
 # Other files
 *.swp
+
+# Node.js generated files
+src/test/client.js
