@@ -90,7 +90,7 @@ export const updateUserService = async (userId: string, data: any): Promise<IUse
   } catch (error) {
     throw new Error('Error updating user');
   }
-};
+}; 
 
 export const getUserByIdService = async (userId: string): Promise<IUser | null> => {
   try {
