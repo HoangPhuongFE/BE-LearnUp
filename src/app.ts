@@ -11,7 +11,7 @@ import commentRoutes from './routes/commentRoutes';
 import likeRoutes from './routes/likeRoutes';
 import ratingRoutes from './routes/ratingRoutes';
 import meetingRoutes from './routes/meetingRoutes';
-
+import chatRoutes from './routes/chatRoutes';
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 
@@ -33,6 +33,14 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/rating', ratingRoutes);
 app.use('/api/meetings', meetingRoutes);
+app.use('/api/chat', chatRoutes);
+
+
+
+
+
+
+
 
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
