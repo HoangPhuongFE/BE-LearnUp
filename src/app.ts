@@ -12,6 +12,10 @@ import likeRoutes from './routes/likeRoutes';
 import ratingRoutes from './routes/ratingRoutes';
 import meetingRoutes from './routes/meetingRoutes';
 import chatRoutes from './routes/chatRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+
+
+
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 
@@ -20,7 +24,9 @@ connectDB();
 
 const app = express();
 
-app.use(express.json()); // Để xử lý JSON request body
+app.use(express.json());
+
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -34,7 +40,7 @@ app.use('/api/likes', likeRoutes);
 app.use('/api/rating', ratingRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/chat', chatRoutes);
-
+app.use('/api/payments', paymentRoutes);
 
 
 
