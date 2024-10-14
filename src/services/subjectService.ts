@@ -31,3 +31,7 @@ export const updateSubject = async (id: string, data: { name?: string }) => {
 export const deleteSubject = async (id: string) => {
   return await Subject.findByIdAndDelete(id);
 };
+
+export const getSubjectById = async (id: string) => {
+  return await Subject.findById(id).populate('resources');
+};

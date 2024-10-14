@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSubjectToSemester, getSubjects, updateSubject, deleteSubject } from '../controllers/subjectController';
+import { addSubjectToSemester, getSubjects, updateSubject, deleteSubject ,getSubjectById } from '../controllers/subjectController';
 import { protect } from '../middlewares/authMiddleware';
 import { checkPermission } from '../middlewares/permissionMiddleware';
 
@@ -9,5 +9,5 @@ router.post('/:semesterId/subjects', protect, checkPermission ('manage_subjects'
 router.get('/', protect, getSubjects); // Lấy danh sách môn học
 router.put('/:id', protect,checkPermission ('manage_subjects'), updateSubject); // Cập nhật môn học
 router.delete('/:id', protect, checkPermission ('manage_subjects'),deleteSubject); // Xóa môn học
-
+router.get('/:id', protect, getSubjectById); // Lấy môn học theo id
 export default router;

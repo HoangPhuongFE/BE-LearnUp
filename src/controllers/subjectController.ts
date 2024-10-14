@@ -3,7 +3,8 @@ import {
   createSubject,
   getSubjects as getSubjectsService,
   updateSubject as updateSubjectService,
-  deleteSubject as deleteSubjectService
+  deleteSubject as deleteSubjectService,
+  getSubjectById as getSubjectByIdService
 } from '../services/subjectService';
 
 // Thêm môn học vào học kỳ
@@ -47,6 +48,18 @@ export const deleteSubject = async (req: Request, res: Response) => {
     const subject = await deleteSubjectService(id); // Xóa môn học
     if (!subject) return res.status(404).json({ message: 'Môn học không tồn tại' });
     res.status(200).json({ message: 'Môn học đã được xóa' });
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
+  }
+};
+
+// Lấy môn học theo id
+export const getSubjectById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const subject = await getSubjectByIdService(id); // Lấy môn học theo id
+    if (!subject) return res.status(404).json({ message: 'Môn học không tồn tại' });
+    res.status(200).json(subject); // Trả về dữ liệu môn học
   } catch (error) {
     res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }
