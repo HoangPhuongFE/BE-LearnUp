@@ -8,7 +8,8 @@ import {
   updateVideo,
   deleteVideo,
   getAllVideos,
-  getVideoById
+  getVideoById,
+  getResourceById
 
 } from '../controllers/resourceController';
 import { protect } from '../middlewares/authMiddleware';
@@ -45,7 +46,8 @@ router.get('/videos', protect, getAllVideos);
 // Lấy video theo id
 router.get('/videos/:id', protect, getVideoById);
 
-
+// Lấy tài liệu theo id
+router.get('/:id', protect, getResourceById);
 
 
 export default router;

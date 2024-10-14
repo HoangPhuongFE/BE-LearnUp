@@ -4,7 +4,8 @@ import {
   createResource,
   getResources as getResourcesService,
   updateResource as updateResourceService,
-  deleteResource as deleteResourceService
+  deleteResource as deleteResourceService,
+  getResourceById as getResourceByIdService
 } from '../services/resourceService';
 
 // Thêm tài liệu vào môn học
@@ -80,7 +81,7 @@ export const deleteResource = async (req: Request, res: Response) => {
 };
 
 
-// controllers/resourceController.ts
+
 
 export const uploadVideo = async (req: Request, res: Response) => {
   const { title, description, youtubeUrl } = req.body;  // Lấy dữ liệu từ body của request
@@ -156,7 +157,7 @@ export const deleteVideo = async (req: Request, res: Response) => {
 };
 
 
-
+// Lấy tất cả video
 export const getAllVideos = async (req: Request, res: Response) => {
   const { page = 1, limit = 10 } = req.query;  // Hỗ trợ phân trang nếu cần
 
@@ -177,7 +178,7 @@ export const getAllVideos = async (req: Request, res: Response) => {
   }
 };
 
-
+// Lấy video theo ID
 export const getVideoById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -196,5 +197,21 @@ export const getVideoById = async (req: Request, res: Response) => {
     } else {
       res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
     }
+  }
+};
+
+
+//  Lấy tài liệu theo ID
+export const getResourceById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const resource = await Resource.findById(id); // Tìm tài liệu theo ID
+
+    if (!resource) return res.status(404).json({ message: 'Tài liệu không tồn tại' });
+
+    res.status(200).json(resource); // Trả về tài liệu
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }
 };

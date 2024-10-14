@@ -53,3 +53,7 @@ export const updateResource = async (
 export const deleteResource = async (id: string) => {
   return await Resource.findByIdAndDelete(id);
 };
+
+export const getResourceById = async (id: string) => {
+  return await Resource.findById(id);
+};
