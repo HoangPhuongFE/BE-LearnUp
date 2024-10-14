@@ -31,3 +31,7 @@ export const updateSemester = async (id: string, data: { name?: string }) => {
 export const deleteSemester = async (id: string) => {
   return await Semester.findByIdAndDelete(id);
 };
+
+export const getSemesterById = async (id: string) => {
+  return await Semester.findById(id).populate('subjects');
+};

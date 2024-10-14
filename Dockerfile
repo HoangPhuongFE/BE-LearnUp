@@ -13,6 +13,10 @@ RUN npm install
 # Bước 5: Sao chép toàn bộ mã nguồn vào thư mục làm việc
 COPY . .
 
+# Thiết lập quyền truy cập cho tệp .env nếu tồn tại
+RUN if [ -f ".env" ]; then chmod 600 .env; fi
+
+
 # Bước 6: Biên dịch mã TypeScript
 RUN npm run build
 
@@ -30,6 +34,10 @@ COPY --from=build /app/package*.json ./
 
 # Bước 11: Cài đặt chỉ các dependencies cần thiết cho môi trường sản xuất
 RUN npm install --only=production
+
+# Tạo người dùng mới và chuyển sang người dùng không phải root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
 # Bước 12: Chỉ định cổng mà ứng dụng sẽ sử dụng
 EXPOSE 8080

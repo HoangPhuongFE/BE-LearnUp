@@ -3,7 +3,8 @@ import {
   createSemester,
   getSemesters as getSemestersService,
   updateSemester as updateSemesterService,
-  deleteSemester as deleteSemesterService
+  deleteSemester as deleteSemesterService,
+  getSemesterById as getSemesterByIdService
 } from '../services/semesterService';
 
 // Thêm học kỳ vào ngành học
@@ -51,3 +52,17 @@ export const deleteSemester = async (req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }
 };
+
+// Lấy học kỳ theo id
+export const getSemesterById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const semester = await getSemesterByIdService(id); // Gọi service với 1 tham số là id
+    if (!semester) return res.status(404).json({ message: 'Học kỳ không tồn tại' });
+    res.status(200).json(semester); // Trả về dữ liệu học kỳ
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
+  }
+};
+
+

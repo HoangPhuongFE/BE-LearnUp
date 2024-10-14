@@ -14,11 +14,19 @@ import meetingRoutes from './routes/meetingRoutes';
 import chatRoutes from './routes/chatRoutes';
 import connectDB from './config/database';
 import dotenv from 'dotenv';
+const cors = require('cors');
 
 dotenv.config();
 connectDB();
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:9999', 
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
+
 
 app.use(express.json()); // Để xử lý JSON request body
 
