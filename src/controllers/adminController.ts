@@ -94,31 +94,42 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-// Upgrade user to premium
 export const upgradeToPremium = async (req: Request, res: Response) => {
-  const { id } = req.params; // User ID
+  const { id } = req.params; // ID của người dùng
 
   try {
     const user = await User.findById(id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'Người dùng không tồn tại' });
 
+    // Cập nhật role thành member_premium
     user.role = 'member_premium';
+
+    // Lưu ngày bắt đầu và tính toán ngày hết hạn là 30 ngày kể từ ngày nâng cấp
+    const premiumStartDate = new Date();
+    const premiumEndDate = new Date();
+    premiumEndDate.setDate(premiumEndDate.getDate() + 30);
+
+    user.premiumStartDate = premiumStartDate;
+    user.premiumEndDate = premiumEndDate;
+
     await user.save();
 
     res.status(200).json({
-      message: 'User upgraded to premium successfully',
+      message: 'Nâng cấp tài khoản thành công, tài khoản sẽ hết hạn sau 30 ngày',
       user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        premiumStartDate: user.premiumStartDate, // Gửi thông tin ngày bắt đầu
+        premiumEndDate: user.premiumEndDate, // Gửi thông tin ngày hết hạn về cho admin
       },
     });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ message: 'Error upgrading user to premium', error: error.message });
+      res.status(500).json({ message: 'Lỗi khi nâng cấp tài khoản', error: error.message });
     } else {
-      res.status(500).json({ message: 'An unknown error occurred' });
+      res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
     }
   }
 };

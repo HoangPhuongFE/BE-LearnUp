@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -11,9 +10,11 @@ export interface IUser extends Document {
   address?: string;
   phone?: string;
   avatar?: string;
-  gender?:string;
+  gender?: string;
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
+  premiumStartDate?: Date;  
+  premiumEndDate?: Date;    
   matchPassword(enteredPassword: string): Promise<boolean>;
   _id: mongoose.Types.ObjectId;
 }
@@ -39,7 +40,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   },
   permissions: {
     type: [String],
-    default: [], 
+    default: [],
   },
   address: {
     type: String,
@@ -51,11 +52,20 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     type: String,
   },
   gender: {
-    type: String
+    type: String,
   },
-
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+
+  // Thêm thuộc tính premium
+  premiumStartDate: {
+    type: Date,
+    default: null,
+  },
+  premiumEndDate: {
+    type: Date,
+    default: null,
+  },
 });
 
 // Mã hóa mật khẩu trước khi lưu vào DB
