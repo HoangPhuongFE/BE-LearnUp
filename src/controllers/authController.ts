@@ -4,6 +4,8 @@ import sendEmail from '../utils/sendEmail';
 import generateToken from '../utils/generateToken';
 import User from '../models/User';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // Đăng ký người dùng
 export const registerUser = async (req: Request, res: Response) => {
@@ -24,24 +26,40 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+
 // Đăng nhập người dùng
 export const loginUserController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await loginUser(email, password);
+    // Tìm người dùng qua email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Email không tồn tại' });
+    }
 
-    res.json({
+    // Kiểm tra mật khẩu
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Mật khẩu không đúng' });
+    }
+
+    // Tạo token JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+
+    // Trả về thông tin người dùng và token
+    res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
+      token,
     });
   } catch (error) {
-    res.status(401).json({ message: (error as Error).message });
+    res.status(500).json({ message: 'Lỗi đăng nhập', error: (error as Error).message });
   }
 };
+
 
 // Quên mật khẩu
 export const forgetPassword = async (req: Request, res: Response) => {
@@ -69,29 +87,38 @@ Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu của bạ
 
 
 
+
+
+// Đặt lại mật khẩu người dùng
 export const resetPassword = async (req: Request, res: Response) => {
   const resetToken = req.params.token;
   const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
   try {
+    // Tìm người dùng theo token đặt lại mật khẩu
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
-      resetPasswordExpire: { $gt: Date.now() },  // Kiểm tra token còn hợp lệ
+      resetPasswordExpire: { $gt: Date.now() },  // Token còn hạn
     });
 
     if (!user) {
       return res.status(400).json({ message: 'Mã thông báo không hợp lệ hoặc đã hết hạn' });
     }
 
-    // console.log('Đã tìm thấy người dùng để đặt lại mật khẩu:', user.email);
-
     // Đặt lại mật khẩu mới
     const newPassword = req.body.password;
-    await resetUserPassword(user, newPassword);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();  // Lưu người dùng sau khi đặt lại mật khẩu
 
     res.status(200).json({ message: 'Mật khẩu đã được cập nhật thành công' });
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    res.status(500).json({ message: 'Lỗi khi đặt lại mật khẩu', error: (error as Error).message });
   }
 };
 

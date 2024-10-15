@@ -33,11 +33,11 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error('Invalid email or password');
   }
 
- // console.log('Stored password hash:', user.password);  // Log mật khẩu đã mã hóa trong DB
-  //console.log('Entered password:', password);  // Log mật khẩu đã nhập vào
+  console.log('Stored password hash:', user.password);  // Log mật khẩu đã mã hóa trong DB
+  console.log('Entered password:', password);  // Log mật khẩu đã nhập vào
   
   // So sánh mật khẩu đã nhập với mật khẩu đã mã hóa trong DB
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare( password , user.password);
   
   if (!isMatch) {
     console.log('Password does not match. Entered password:', password, 'Stored hash:', user.password);
@@ -65,7 +65,7 @@ export const resetUserPassword = async (user: any, newPassword: string) => {
   
   // Mã hóa mật khẩu mới
   user.password = await bcrypt.hash(newPassword, salt);
- // console.log('New hashed password before saving:', user.password);  // Log mật khẩu đã mã hóa
+  console.log('New hashed password before saving:', user.password);  // Log mật khẩu đã mã hóa
 
   // Hủy token reset mật khẩu
   user.resetPasswordToken = undefined;
@@ -73,7 +73,7 @@ export const resetUserPassword = async (user: any, newPassword: string) => {
 
   // Lưu người dùng và log sau khi lưu
   await user.save()
-    .then(() => console.log('Password has been saved to the database'))
+    .then(() => console.log('Password has been saved to the database',user.password))
     .catch((err: unknown) => console.log('Error saving password to the database:', err));
 };
 
