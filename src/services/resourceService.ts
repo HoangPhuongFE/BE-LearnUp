@@ -10,17 +10,13 @@ export const createResource = async (
   type: string,
   allowedRoles: string[]
 ) => {
-  // Tạo tài liệu mới cho Resource
-  const resource = new Resource({ title, description, fileUrls, type, allowedRoles });
+  const resource = new Resource({ title, description, fileUrls, type, allowedRoles, subject: subjectId });  // Lưu subjectId
   await resource.save();
 
-  // Tìm Subject theo subjectId và thêm resource._id vào mảng resources
   const subject = await Subject.findById(subjectId);
   if (subject) {
-    // Ép kiểu _id thành ObjectId
     const resourceId = resource._id as ObjectId;
-
-    subject.resources.push(resourceId); // Chỉ thêm ObjectId của resource
+    subject.resources.push(resourceId);
     await subject.save();
   }
 
@@ -55,5 +51,5 @@ export const deleteResource = async (id: string) => {
 };
 
 export const getResourceById = async (id: string) => {
-  return await Resource.findById(id);
+  return await Resource.findById(id).populate('subject', 'name');  
 };

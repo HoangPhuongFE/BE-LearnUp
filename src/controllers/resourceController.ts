@@ -201,17 +201,16 @@ export const getVideoById = async (req: Request, res: Response) => {
 };
 
 
-//  Lấy tài liệu theo ID
+// Lấy tài liệu theo ID và hiển thị subject name
 export const getResourceById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const resource = await Resource.findById(id); // Tìm tài liệu theo ID
-
+    const resource = await getResourceByIdService(id);
     if (!resource) return res.status(404).json({ message: 'Tài liệu không tồn tại' });
 
-    res.status(200).json(resource); // Trả về tài liệu
+    res.status(200).json(resource); // Trả về dữ liệu tài liệu và subject
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
+    res.status(500).json({ message: (error as Error).message });
   }
 };

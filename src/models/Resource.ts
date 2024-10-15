@@ -5,6 +5,7 @@ export interface IResource extends Document {
   description?: string;
   fileUrls ?: string[];
   type ? : 'pdf' | 'video' | 'document';
+  subject: mongoose.Types.ObjectId; 
   allowedRoles?: ('member_free' | 'member_premium')[]; // Không bắt buộc
 }
 
@@ -18,6 +19,7 @@ const resourceSchema: Schema = new mongoose.Schema({
     enum: ['member_free', 'member_premium'],
     default: ['member_premium'], // Mặc định là 'member_premium'
   },
+  subject: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true }, // Liên kết với mô hình Subject
 });
 
 const Resource = mongoose.model<IResource>('Resource', resourceSchema);
