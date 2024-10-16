@@ -10,7 +10,7 @@ export interface IUser extends Document {
   address?: string;
   phone?: string;
   avatar?: string;
-  gender?: string;
+  gender?: 'nam' | 'nu' | 'khac';
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   premiumStartDate?: Date;  
@@ -53,11 +53,12 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   },
   gender: {
     type: String,
+    enum: ['nam', 'nu', 'khac'],
+    
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 
-  // Thêm thuộc tính premium
   premiumStartDate: {
     type: Date,
     default: null,

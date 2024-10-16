@@ -79,3 +79,5 @@ logs/
 
 # Node.js generated files
 src/test/client.js
+
+src/public/

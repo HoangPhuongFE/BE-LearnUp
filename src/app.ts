@@ -1,5 +1,5 @@
-// app.ts
 import express from 'express';
+import path from 'path';
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import departmentRoutes from './routes/departmentRoutes';
@@ -27,8 +27,10 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.use(express.json()); // Để xử lý JSON request body
+
+// Sử dụng file tĩnh từ thư mục 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -44,23 +46,14 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/chat', chatRoutes);
 
 
-
-
-
-
-
-
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
     res.send('Welcome to LearnUp API');
-  });
+});
   
-  // Thêm catch-all route cho các yêu cầu không xác định
-  app.use((req, res) => {
+// Thêm catch-all route cho các yêu cầu không xác định
+app.use((req, res) => {
     res.status(404).send('Page not found');
-  });
-  
-
-
+});
 
 export default app;
