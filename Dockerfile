@@ -40,7 +40,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
 # Bước 13: Chỉ định cổng mà ứng dụng sẽ sử dụng
-EXPOSE 8080
+EXPOSE 3000
 
 # Bước 14: Chạy ứng dụng
 CMD ["node", "dist/server.js"]
