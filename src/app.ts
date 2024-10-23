@@ -12,11 +12,20 @@ import likeRoutes from './routes/likeRoutes';
 import ratingRoutes from './routes/ratingRoutes';
 import meetingRoutes from './routes/meetingRoutes';
 import chatRoutes from './routes/chatRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import orderRoutes from './routes/orderRoutes';
+
+
+ 
 import connectDB from './config/database';
 import dotenv from 'dotenv';
+dotenv.config();
+console.log("PAYOS_CLIENT_ID:", process.env.PAYOS_CLIENT_ID);
+console.log("PAYOS_API_KEY:", process.env.PAYOS_API_KEY);
+console.log("PAYOS_CHECKSUM_KEY:", process.env.PAYOS_CHECKSUM_KEY);
+
 const cors = require('cors');
 
-dotenv.config();
 connectDB();
 
 const app = express();
@@ -44,7 +53,8 @@ app.use('/api/likes', likeRoutes);
 app.use('/api/rating', ratingRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/chat', chatRoutes);
-
+app.use('/api/payment', paymentRoutes);
+app.use('/api/order', orderRoutes);
 
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
