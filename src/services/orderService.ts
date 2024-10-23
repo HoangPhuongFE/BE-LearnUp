@@ -2,6 +2,7 @@ import Order from '../models/Order';
 import User from '../models/User';
 import { pricing } from '../config/pricing';
 
+
 export const createOrderService = async (userId: string, product: keyof typeof pricing) => {
   const amount = pricing[product];
   if (!amount) {
@@ -20,9 +21,22 @@ export const createOrderService = async (userId: string, product: keyof typeof p
 };
 
 export const updateOrderStatusService = async (orderId: string, status: 'pending' | 'completed' | 'cancelled') => {
-  const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+  const order = await Order.findById(orderId);
 
-  if (order && status === 'completed') {
+  if (!order) {
+    throw new Error('Đơn hàng không tồn tại.');
+  }
+
+  // Nếu đơn hàng đã bị hủy, không thể cập nhật lại trạng thái
+  if (order.status === 'cancelled') {
+    throw new Error('Đơn hàng này đã bị hủy, không thể cập nhật trạng thái.');
+  }
+
+  // Cập nhật trạng thái đơn hàng
+  order.status = status;
+
+  // Nếu đơn hàng được hoàn thành, nâng cấp tài khoản người dùng lên member_premium
+  if (status === 'completed') {
     const user = await User.findById(order.user);
     if (user) {
       user.role = 'member_premium';
@@ -32,5 +46,6 @@ export const updateOrderStatusService = async (orderId: string, status: 'pending
     }
   }
 
+  await order.save();
   return order;
 };

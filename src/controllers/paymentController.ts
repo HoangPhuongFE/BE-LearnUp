@@ -9,7 +9,7 @@ export const createPayment = async (req: Request, res: Response) => {
   const amount = pricing[product];
 
   try {
-    // Tạo mã orderCode ngẫu nhiên có độ dài dưới 6 chữ số, đảm bảo không vượt quá giới hạn
+    // Tạo mã orderCode ngẫu nhiên có độ dài dưới 6 chữ số
     const orderCode = Math.floor(Math.random() * 899999) + 1;
 
     const paymentLink = await createPaymentLink({

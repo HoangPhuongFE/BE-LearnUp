@@ -1,5 +1,5 @@
 import PayOS from '@payos/node';
-require('dotenv').config(); 
+require('dotenv').config();
 
 const payOSClientId = process.env.PAYOS_CLIENT_ID || '';
 const payOSApiKey = process.env.PAYOS_API_KEY || '';
