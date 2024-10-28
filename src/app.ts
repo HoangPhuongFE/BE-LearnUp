@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import morgan from 'morgan'; // Thêm morgan
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import departmentRoutes from './routes/departmentRoutes';
@@ -15,8 +16,6 @@ import chatRoutes from './routes/chatRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import orderRoutes from './routes/orderRoutes';
 
-
- 
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -26,9 +25,13 @@ console.log("PAYOS_CHECKSUM_KEY:", process.env.PAYOS_CHECKSUM_KEY);
 
 const cors = require('cors');
 
+// Kết nối cơ sở dữ liệu
 connectDB();
 
 const app = express();
+
+// Sử dụng morgan để log các request
+app.use(morgan('dev')); // Thêm dòng này
 
 app.use(cors({
   origin: 'http://localhost:9999', 
@@ -41,6 +44,7 @@ app.use(express.json()); // Để xử lý JSON request body
 // Sử dụng file tĩnh từ thư mục 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Các route của ứng dụng
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/departments', departmentRoutes);
