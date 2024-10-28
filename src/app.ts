@@ -19,9 +19,9 @@ import orderRoutes from './routes/orderRoutes';
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 dotenv.config();
-console.log("PAYOS_CLIENT_ID:", process.env.PAYOS_CLIENT_ID);
-console.log("PAYOS_API_KEY:", process.env.PAYOS_API_KEY);
-console.log("PAYOS_CHECKSUM_KEY:", process.env.PAYOS_CHECKSUM_KEY);
+//console.log("PAYOS_CLIENT_ID:", process.env.PAYOS_CLIENT_ID);
+//console.log("PAYOS_API_KEY:", process.env.PAYOS_API_KEY);
+//console.log("PAYOS_CHECKSUM_KEY:", process.env.PAYOS_CHECKSUM_KEY);
 
 const cors = require('cors');
 
