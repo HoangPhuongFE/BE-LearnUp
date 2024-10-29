@@ -1,10 +1,7 @@
-# Bỏ qua các thư mục và file không cần thiết khi build Docker image
-
 # Node.js dependencies (sẽ được cài đặt lại bên trong Docker)
 node_modules/
 
-# Build outputs
-dist/
+# Build outputs (dist là mã biên dịch cần thiết, không nên bỏ qua)
 build/
 
 # Git repository
@@ -35,4 +32,3 @@ Dockerfile
 # IDE specific files
 .vscode/
 .idea/
-
