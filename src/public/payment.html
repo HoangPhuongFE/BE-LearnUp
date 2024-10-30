@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+</head>
+<body>
+    <h2>Purchase Premium Membership</h2>
+    <button id="purchaseButton">Purchase</button>
+
+    <script>
+        document.getElementById('purchaseButton').addEventListener('click', async function() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/payment/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ product: 'premium_upgrade' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = data.checkoutUrl; 
+                } else {
+                    alert('Payment failed: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
