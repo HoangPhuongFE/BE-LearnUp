@@ -11,6 +11,14 @@ const subjectSchema: Schema = new mongoose.Schema({
   semester: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true },
   resources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Resource' }],
 });
-
+// Chuyển đổi _id thành id khi trả về JSON
+subjectSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+  }
+});
 const Subject = mongoose.model<ISubject>('Subject', subjectSchema);
 export default Subject;

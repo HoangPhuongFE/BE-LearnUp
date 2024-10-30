@@ -21,6 +21,14 @@ const resourceSchema: Schema = new mongoose.Schema({
   },
   subject: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true }, // Liên kết với mô hình Subject
 });
-
+// Chuyển đổi _id thành id khi trả về JSON
+resourceSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+  }
+});
 const Resource = mongoose.model<IResource>('Resource', resourceSchema);
 export default Resource;
