@@ -2,7 +2,6 @@
 node_modules/
 
 # Build outputs
-
 build/
 
 # TypeScript cache
@@ -80,3 +79,4 @@ logs/
 # Node.js generated files
 src/test/client.js
 
+src/public/
