@@ -9,13 +9,18 @@ import {
   deleteVideo,
   getAllVideos,
   getVideoById,
-  getResourceById
+  getResourceById,
+  getAllResources
 
 } from '../controllers/resourceController';
 import { protect } from '../middlewares/authMiddleware';
 
 import { checkPermission } from '../middlewares/permissionMiddleware';
 const router = express.Router();
+
+// Lấy tất cả tài liệu với phân trang
+router.get('/all-resources', protect, getAllResources);
+
 
 // Tạo tài liệu mới cho môn học
 router.post('/:subjectId/resources',protect,checkPermission ('manage_resources'), addResourceToSubject);

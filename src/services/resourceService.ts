@@ -53,3 +53,16 @@ export const deleteResource = async (id: string) => {
 export const getResourceById = async (id: string) => {
   return await Resource.findById(id).populate('subject', 'name');  
 };
+export const getAllResources = async (page: number, limit: number) => {
+  const resources = await Resource.find()
+    .skip((page - 1) * limit)  // Phân trang
+    .limit(limit);              // Giới hạn số lượng tài liệu mỗi lần
+
+  const totalResources = await Resource.countDocuments();
+  return {
+    resources,
+    totalPages: Math.ceil(totalResources / limit),
+    totalResources,
+    currentPage: page,
+  };
+};

@@ -5,7 +5,8 @@ import {
   getResources as getResourcesService,
   updateResource as updateResourceService,
   deleteResource as deleteResourceService,
-  getResourceById as getResourceByIdService
+  getResourceById as getResourceByIdService,
+  getAllResources as getAllResourcesService
 } from '../services/resourceService';
 
 // Thêm tài liệu vào môn học
@@ -212,5 +213,18 @@ export const getResourceById = async (req: Request, res: Response) => {
     res.status(200).json(resource); // Trả về dữ liệu tài liệu và subject
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+
+
+export const getAllResources = async (req: Request, res: Response) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    const resourcesData = await getAllResourcesService(Number(page), Number(limit)); // Gọi service với phân trang
+    res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }
 };
