@@ -20,7 +20,7 @@ const router = express.Router();
 
 // Lấy tất cả tài liệu với phân trang
 router.get('/all-resources', protect, getAllResources);
-
+// fix lỗi id không trùng với id của video
 
 // Tạo tài liệu mới cho môn học
 router.post('/:subjectId/resources',protect,checkPermission ('manage_resources'), addResourceToSubject);

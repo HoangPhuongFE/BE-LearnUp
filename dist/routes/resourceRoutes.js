@@ -10,6 +10,7 @@ const permissionMiddleware_1 = require("../middlewares/permissionMiddleware");
 const router = express_1.default.Router();
 // Lấy tất cả tài liệu với phân trang
 router.get('/all-resources', authMiddleware_1.protect, resourceController_1.getAllResources);
+// fix lỗi id không trùng với id của video
 // Tạo tài liệu mới cho môn học
 router.post('/:subjectId/resources', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_resources'), resourceController_1.addResourceToSubject);
 // Lấy danh sách tài liệu của môn học với phân trang
