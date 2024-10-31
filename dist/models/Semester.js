@@ -20,5 +20,14 @@ const semesterSchema = new mongoose_1.default.Schema({
             ref: 'Subject',
         }],
 });
+// Chuyển đổi _id thành id khi trả về JSON
+semesterSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const Semester = mongoose_1.default.model('Semester', semesterSchema);
 exports.default = Semester;

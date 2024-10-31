@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getResourceById = exports.deleteResource = exports.updateResource = exports.getResources = exports.createResource = void 0;
+exports.getAllResources = exports.getResourceById = exports.deleteResource = exports.updateResource = exports.getResources = exports.createResource = void 0;
 const Resource_1 = __importDefault(require("../models/Resource"));
 const Subject_1 = __importDefault(require("../models/Subject"));
 const createResource = (subjectId, title, description, fileUrls, type, allowedRoles) => __awaiter(void 0, void 0, void 0, function* () {
@@ -54,3 +54,16 @@ const getResourceById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Resource_1.default.findById(id).populate('subject', 'name');
 });
 exports.getResourceById = getResourceById;
+const getAllResources = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+    const resources = yield Resource_1.default.find()
+        .skip((page - 1) * limit) // Phân trang
+        .limit(limit); // Giới hạn số lượng tài liệu mỗi lần
+    const totalResources = yield Resource_1.default.countDocuments();
+    return {
+        resources,
+        totalPages: Math.ceil(totalResources / limit),
+        totalResources,
+        currentPage: page,
+    };
+});
+exports.getAllResources = getAllResources;

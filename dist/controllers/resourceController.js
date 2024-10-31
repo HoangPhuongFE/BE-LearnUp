@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getResourceById = exports.getVideoById = exports.getAllVideos = exports.deleteVideo = exports.updateVideo = exports.uploadVideo = exports.deleteResource = exports.updateResource = exports.getResourcesForSubject = exports.addResourceToSubject = void 0;
+exports.getAllResources = exports.getResourceById = exports.getVideoById = exports.getAllVideos = exports.deleteVideo = exports.updateVideo = exports.uploadVideo = exports.deleteResource = exports.updateResource = exports.getResourcesForSubject = exports.addResourceToSubject = void 0;
 const Resource_1 = __importDefault(require("../models/Resource"));
 const resourceService_1 = require("../services/resourceService");
 // Thêm tài liệu vào môn học
@@ -202,3 +202,14 @@ const getResourceById = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getResourceById = getResourceById;
+const getAllResources = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page = 1, limit = 10 } = req.query;
+    try {
+        const resourcesData = yield (0, resourceService_1.getAllResources)(Number(page), Number(limit)); // Gọi service với phân trang
+        res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message }); // Xử lý lỗi
+    }
+});
+exports.getAllResources = getAllResources;

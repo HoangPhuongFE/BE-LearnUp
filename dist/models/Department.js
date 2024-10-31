@@ -19,5 +19,14 @@ const departmentSchema = new mongoose_1.default.Schema({
             ref: 'Semester',
         }],
 });
+// Chuyển đổi _id thành id khi trả về JSON
+departmentSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const Department = mongoose_1.default.model('Department', departmentSchema);
 exports.default = Department;
