@@ -34,7 +34,7 @@ const app = express();
 app.use(morgan('dev')); // Thêm dòng này
 
 app.use(cors({
-  origin: 'http://learnup.work',
+  origin: ['http://learnup.work','http://localhost:8080'],
   methods: 'GET,POST,PUT,DELETE',
   credentials: true
 }));
