@@ -1,28 +1,35 @@
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import app from './app';
 import { Server } from 'socket.io';
-import { setupSocket } from './socket/socket';
 
-// Tạo HTTP server
 const PORT = process.env.PORT || 8080;
-const httpServer = require('http').createServer(app);
 
-// Tạo server Socket.IO
-const io = new Server(httpServer, {
+let server;
+if (process.env.NODE_ENV === 'production') {
+  // Sử dụng HTTPS trên server sản xuất (VPS)
+  const sslOptions = {
+    key: fs.readFileSync('/etc/letsencrypt/live/learnup.work/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/learnup.work/fullchain.pem')
+  };
+  server = https.createServer(sslOptions, app);
+  console.log('Running with HTTPS');
+} else {
+  // Sử dụng HTTP cho phát triển cục bộ
+  server = http.createServer(app);
+  console.log('Running with HTTP');
+}
+
+// Thiết lập Socket.IO với server
+const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.NODE_ENV === 'production' ? 'https://learnup.work' : 'http://localhost:3000',
     methods: ['GET', 'POST']
   }
 });
 
-// Thiết lập socket
-setupSocket(io);
-
 // Lắng nghe cổng
-/*
-httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-*/
-httpServer.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

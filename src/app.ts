@@ -39,6 +39,7 @@ app.use(cors({
   credentials: true
 }));
 
+
 app.use(express.json()); // Để xử lý JSON request body
 
 // Sử dụng file tĩnh từ thư mục 'public'
