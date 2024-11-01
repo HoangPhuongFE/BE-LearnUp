@@ -7,7 +7,5 @@ services:
       - "8081:8080"
     env_file:
       - .env
-    volumes:
-      - .:/app
-      - /etc/letsencrypt/live/learnup.work:/etc/letsencrypt/live/learnup.work  # Chia sẻ thư mục chứa chứng chỉ SSL
+    
     restart: always
