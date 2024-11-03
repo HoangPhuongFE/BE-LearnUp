@@ -14,9 +14,9 @@ const subjectService_1 = require("../services/subjectService");
 // Thêm môn học vào học kỳ
 const addSubjectToSemester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { semesterId } = req.params;
-    const { name } = req.body;
+    const { name, description } = req.body;
     try {
-        const subject = yield (0, subjectService_1.createSubject)(semesterId, name); // Tạo môn học
+        const subject = yield (0, subjectService_1.createSubject)(semesterId, name, description); // Tạo môn học
         res.status(201).json(subject); // Trả về dữ liệu môn học vừa tạo
     }
     catch (error) {

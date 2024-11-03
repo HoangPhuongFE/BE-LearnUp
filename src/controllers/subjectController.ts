@@ -11,9 +11,9 @@ import {
 // Thêm môn học vào học kỳ
 export const addSubjectToSemester = async (req: Request, res: Response) => {
   const { semesterId } = req.params;
-  const { name } = req.body;
+  const { name , description } = req.body;
   try {
-    const subject = await createSubject(semesterId, name); // Tạo môn học
+    const subject = await createSubject(semesterId, name , description); // Tạo môn học
     res.status(201).json(subject); // Trả về dữ liệu môn học vừa tạo
   } catch (error) {
     res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi

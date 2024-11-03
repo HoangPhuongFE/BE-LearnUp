@@ -2,12 +2,14 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISubject extends Document {
   name: string;
+  description?: string;
   semester: mongoose.Types.ObjectId;
   resources: mongoose.Types.ObjectId[];
 }
 
 const subjectSchema: Schema = new mongoose.Schema({
   name: { type: String, required: true },
+  description: { type: String, required: false },
   semester: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true },
   resources: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Resource' }],
 });

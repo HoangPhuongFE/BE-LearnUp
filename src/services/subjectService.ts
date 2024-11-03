@@ -2,9 +2,9 @@ import Subject from '../models/Subject';
 import Semester from '../models/Semester';
 import { ObjectId } from 'mongodb';
 
-export const createSubject = async (semesterId: string, name: string) => {
+export const createSubject = async (semesterId: string, name: string,description?:string) => {
   // Tạo tài liệu mới cho Subject và lưu semesterId
-  const subject = new Subject({ name, semester: semesterId });
+  const subject = new Subject({ name,description, semester: semesterId });
   await subject.save();
 
   // Tìm Semester theo semesterId và thêm subject._id vào mảng subjects
@@ -23,7 +23,7 @@ export const getSubjects = async () => {
   return await Subject.find().populate('resources');
 };
 
-export const updateSubject = async (id: string, data: { name?: string }) => {
+export const updateSubject = async (id: string, data: { name?: string ; descripton?:string}) => {
   return await Subject.findByIdAndUpdate(id, data, { new: true });
 };
 

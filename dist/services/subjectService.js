@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSubjectWithSemesterService = exports.getSubjectById = exports.deleteSubject = exports.updateSubject = exports.getSubjects = exports.createSubject = void 0;
 const Subject_1 = __importDefault(require("../models/Subject"));
 const Semester_1 = __importDefault(require("../models/Semester"));
-const createSubject = (semesterId, name) => __awaiter(void 0, void 0, void 0, function* () {
+const createSubject = (semesterId, name, description) => __awaiter(void 0, void 0, void 0, function* () {
     // Tạo tài liệu mới cho Subject và lưu semesterId
-    const subject = new Subject_1.default({ name, semester: semesterId });
+    const subject = new Subject_1.default({ name, description, semester: semesterId });
     yield subject.save();
     // Tìm Semester theo semesterId và thêm subject._id vào mảng subjects
     const semester = yield Semester_1.default.findById(semesterId);

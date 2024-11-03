@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const subjectSchema = new mongoose_1.default.Schema({
     name: { type: String, required: true },
+    description: { type: String, required: false },
     semester: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Semester', required: true },
     resources: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Resource' }],
 });
