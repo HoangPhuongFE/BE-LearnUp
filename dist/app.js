@@ -33,7 +33,7 @@ const app = (0, express_1.default)();
 // Sử dụng morgan để log các request
 app.use((0, morgan_1.default)('dev')); // Thêm dòng này
 app.use(cors({
-    origin: ['http://learnup.work', 'https://learnup.work', 'http://localhost:9999'],
+    origin: ['http://localhost:8080', 'https://exe-201-project.vercel.app'],
     methods: 'GET,POST,PUT,DELETE',
     credentials: true
 }));
