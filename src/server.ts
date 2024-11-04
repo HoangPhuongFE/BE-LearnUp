@@ -10,7 +10,7 @@ const server = http.createServer(app);
 // Thiết lập Socket.IO với server
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ?[ 'http://learnup.work','https://learnup.work'] : 'http://localhost:8080',
+    origin: process.env.NODE_ENV === 'production' ?[ 'http://learnup.work','https://learnup.work'] : 'http://localhost:5173',
     methods: ['GET', 'POST']
   }
 });

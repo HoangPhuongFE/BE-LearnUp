@@ -34,7 +34,7 @@ const app = express();
 app.use(morgan('dev')); // Thêm dòng này
 
 app.use(cors({
-  origin: ['http://localhost:8080','https://exe-201-project.vercel.app','https://learnup.work'],
+  origin: ['http://localhost:5173','https://exe-201-project.vercel.app','https://learnup.work'],
   methods: 'GET,POST,PUT,DELETE',
   credentials: true
 }));
