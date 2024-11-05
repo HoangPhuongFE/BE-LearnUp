@@ -15,9 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
+//
 const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // Bỏ qua xác thực cho yêu cầu OPTIONS (preflight CORS)
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204); // Trả về 204 No Content
+    }
     let token;
-    // Kiểm tra xem token có được truyền trong header không
+    // Kiểm tra xem token có được truyền trong header Authorization không
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
     }
@@ -40,12 +45,12 @@ const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             user.premiumStartDate = undefined;
             yield user.save();
         }
-        // Gán người dùng vào request để sử dụng ở các middleware hoặc controller sau
+        // Gán thông tin người dùng vào request để sử dụng ở các middleware hoặc controller sau
         req.user = user;
         next();
     }
     catch (error) {
-        res.status(401).json({ message: 'Token không hợp lệ' });
+        res.status(401).json({ message: 'Phiên đăng nhập đã hết hạn hoặc token không hợp lệ. Vui lòng đăng nhập lại.' });
     }
 });
 exports.protect = protect;
