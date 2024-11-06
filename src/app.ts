@@ -33,12 +33,19 @@ const app = express();
 // Sử dụng morgan để log các request
 app.use(morgan('dev')); // Thêm dòng này
 
-app.use(cors({
-  origin: ['http://localhost:5173','https://exe-201-project.vercel.app','https://learnup.work'],
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
-}));
+const allowedOrigins = ['http://localhost:5173', 'https://exe-201-project.vercel.app', 'https://learnup.work'];
 
+app.use(cors({
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Cho phép nguồn hợp lệ
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true,
+}));
 
 app.use(express.json()); // Để xử lý JSON request body
 
