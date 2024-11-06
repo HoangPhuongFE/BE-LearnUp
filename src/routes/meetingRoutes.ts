@@ -15,7 +15,7 @@ const router = express.Router();
 router.post('/', protect, checkPermission('manage_meetings'), createMeeting);
 
 // Lấy danh sách tất cả buổi học
-router.get('/', protect, getMeetings);
+router.get('/', getMeetings);
 
 // Lấy buổi học theo ID
 router.get('/:meetingId', protect, getMeetingById);

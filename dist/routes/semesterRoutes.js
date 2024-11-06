@@ -9,7 +9,7 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const permissionMiddleware_1 = require("../middlewares/permissionMiddleware");
 const router = express_1.default.Router();
 router.post('/:departmentId/semesters', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_semesters'), semesterController_1.addSemesterToDepartment); // Tạo học kỳ
-router.get('/', authMiddleware_1.protect, semesterController_1.getSemesters); // Lấy danh sách học kỳ
+router.get('/', semesterController_1.getSemesters); // Lấy danh sách học kỳ
 router.put('/:id', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_semesters'), semesterController_1.updateSemester); // Cập nhật học kỳ
 router.delete('/:id', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_semesters'), semesterController_1.deleteSemester); // Xóa học kỳ
 router.get('/:id', authMiddleware_1.protect, semesterController_1.getSemesterById); // Lấy học kỳ theo id

@@ -5,7 +5,7 @@ import { checkPermission } from '../middlewares/permissionMiddleware';
 const router = express.Router();
 
 router.post('/:departmentId/semesters', protect,checkPermission ('manage_semesters'), addSemesterToDepartment); // Tạo học kỳ
-router.get('/', protect, getSemesters); // Lấy danh sách học kỳ
+router.get('/',  getSemesters); // Lấy danh sách học kỳ
 router.put('/:id', protect,checkPermission ('manage_semesters'), updateSemester); // Cập nhật học kỳ
 router.delete('/:id', protect,checkPermission ('manage_semesters'), deleteSemester); // Xóa học kỳ
 router.get('/:id', protect, getSemesterById); // Lấy học kỳ theo id

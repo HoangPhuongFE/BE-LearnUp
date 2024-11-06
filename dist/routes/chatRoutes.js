@@ -33,7 +33,7 @@ const router = express_1.default.Router();
 // Tạo tin nhắn
 router.post('/messages', authMiddleware_1.protect, ChatController.createMessage);
 // Lấy tất cả tin nhắn
-router.get('/messages', authMiddleware_1.protect, ChatController.getAllMessages);
+router.get('/messages', ChatController.getAllMessages);
 // Lấy tin nhắn theo ID
 router.get('/messages/:messageId', authMiddleware_1.protect, ChatController.getMessageById);
 // Cập nhật tin nhắn

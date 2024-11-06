@@ -10,10 +10,10 @@ const commentController_1 = require("../controllers/commentController");
 const router = express_1.default.Router();
 // Routes cho bài viết
 router.post('/posts/:postId/comments', authMiddleware_1.protect, commentController_1.createComment); // Tạo bình luận cho bài viết
-router.get('/posts/:postId/comments', authMiddleware_1.protect, commentController_1.getCommentsByPostOrVideo); // Lấy bình luận cho bài viết
+router.get('/posts/:postId/comments', commentController_1.getCommentsByPostOrVideo); // Lấy bình luận cho bài viết
 // Routes cho video
 router.post('/videos/:videoId/comments', authMiddleware_1.protect, commentController_1.createComment); // Tạo bình luận cho video
-router.get('/videos/:videoId/comments', authMiddleware_1.protect, commentController_1.getCommentsByPostOrVideo); // Lấy bình luận cho video
+router.get('/videos/:videoId/comments', commentController_1.getCommentsByPostOrVideo); // Lấy bình luận cho video
 // Cập nhật và xóa bình luận
 router.put('/:commentId', authMiddleware_1.protect, commentController_1.updateComment); // Cập nhật bình luận
 router.delete('/:commentId', authMiddleware_1.protect, commentController_1.deleteComment); // Xóa bình luận

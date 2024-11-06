@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/messages', protect, ChatController.createMessage);
 
 // Lấy tất cả tin nhắn
-router.get('/messages', protect, ChatController.getAllMessages);
+router.get('/messages', ChatController.getAllMessages);
 
 // Lấy tin nhắn theo ID
 router.get('/messages/:messageId', protect, ChatController.getMessageById);

@@ -11,7 +11,7 @@ const router = express_1.default.Router();
 // Tạo buổi học mới
 router.post('/', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_meetings'), meetingController_1.createMeeting);
 // Lấy danh sách tất cả buổi học
-router.get('/', authMiddleware_1.protect, meetingController_1.getMeetings);
+router.get('/', meetingController_1.getMeetings);
 // Lấy buổi học theo ID
 router.get('/:meetingId', authMiddleware_1.protect, meetingController_1.getMeetingById);
 // Cập nhật buổi học

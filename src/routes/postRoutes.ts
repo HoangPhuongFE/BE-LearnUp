@@ -5,10 +5,10 @@ import { createPost, getPosts, updatePost, deletePost , searchPosts } from '../c
 const router = express.Router();
 
 router.post('/', protect, createPost) ;
-router.get('/', protect, getPosts);
+router.get('/',  getPosts);
 router.put('/:postId', protect, updatePost);
 router.delete('/:postId', protect, deletePost);
-router.get('/search', protect, searchPosts);
+router.get('/search',  searchPosts);
 
 
 
