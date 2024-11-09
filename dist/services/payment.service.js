@@ -38,7 +38,6 @@ class PaymentService {
                     returnUrl: `${process.env.BE_URL}/payment/success`,
                     webhookUrl: process.env.PAYOS_WEBHOOK_URL
                 };
-                //
                 const paymentResponse = yield this.payOS.createPaymentLink(paymentData);
                 // Lưu thông tin payment
                 yield payment_model_1.Payment.create({
@@ -100,11 +99,10 @@ class PaymentService {
                             throw new Error("Payment not found");
                         }
                         // Update user role
-                        if (orderInfo.type === 'UPGRADE_PREMIUM') {
-                            const user = yield User_1.default.findByIdAndUpdate(orderInfo.userId, { role: "member_premium" }, { session });
-                            if (!user) {
-                                throw new Error("User not found");
-                            }
+                        const userId = orderInfo.description.split(':')[1];
+                        const user = yield User_1.default.findByIdAndUpdate(userId, { role: "member_premium" }, { session });
+                        if (!user) {
+                            throw new Error("User not found");
                         }
                         yield session.commitTransaction();
                         return { success: true, message: "Payment processed successfully" };
