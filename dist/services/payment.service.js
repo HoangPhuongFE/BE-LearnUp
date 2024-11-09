@@ -85,11 +85,14 @@ class PaymentService {
                 }
                 let orderInfo;
                 try {
-                    orderInfo = JSON.parse(webhookData.data.description || "{}");
+                    // Kiểm tra nếu description là JSON hợp lệ, nếu không gán trực tiếp chuỗi
+                    orderInfo = typeof webhookData.data.description === 'string' && webhookData.data.description.startsWith('{')
+                        ? JSON.parse(webhookData.data.description)
+                        : { description: webhookData.data.description };
                 }
                 catch (error) {
                     console.error("Error parsing description:", error);
-                    throw new Error("Invalid description format");
+                    throw new Error("Invalid description format - expected JSON.");
                 }
                 if (webhookData.code === "00") { // Success
                     try {

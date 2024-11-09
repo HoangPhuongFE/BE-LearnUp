@@ -78,91 +78,95 @@ export class PaymentService {
     session.startTransaction();
 
     try {
-      // Verify webhook data
-      const isValidSignature = this.payOS.verifyPaymentWebhookData(webhookData);
+        // Verify webhook data
+        const isValidSignature = this.payOS.verifyPaymentWebhookData(webhookData);
 
-      if (!isValidSignature) {
-        throw new Error("Invalid webhook signature");
-      }
+        if (!isValidSignature) {
+            throw new Error("Invalid webhook signature");
+        }
 
-      let orderInfo;
-      try {
-        orderInfo = JSON.parse(webhookData.data.description || "{}");
-      } catch (error) {
-        console.error("Error parsing description:", error);
-        throw new Error("Invalid description format");
-      }
-
-      if (webhookData.code === "00") { // Success
+        let orderInfo;
         try {
-          // Update payment status
-          const payment = await Payment.findOneAndUpdate(
-            { orderId: webhookData.data.orderCode.toString() },
-            {
-              status: "SUCCESS",
-              paymentData: JSON.stringify(webhookData.data)
-            },
-            { session }
-          );
+            // Kiểm tra nếu description là JSON hợp lệ, nếu không gán trực tiếp chuỗi
+            orderInfo = typeof webhookData.data.description === 'string' && webhookData.data.description.startsWith('{')
+                ? JSON.parse(webhookData.data.description)
+                : { description: webhookData.data.description };
+        } catch (error) {
+            console.error("Error parsing description:", error);
+            throw new Error("Invalid description format - expected JSON.");
+        }
 
-          if (!payment) {
-            throw new Error("Payment not found");
-          }
+        if (webhookData.code === "00") { // Success
+            try {
+                // Update payment status
+                const payment = await Payment.findOneAndUpdate(
+                    { orderId: webhookData.data.orderCode.toString() },
+                    {
+                        status: "SUCCESS",
+                        paymentData: JSON.stringify(webhookData.data)
+                    },
+                    { session }
+                );
 
-          // Update user role
-          if (orderInfo.type === 'UPGRADE_PREMIUM') {
-            const user = await User.findByIdAndUpdate(
-              orderInfo.userId,
-              { role: "member_premium" },
-              { session }
+                if (!payment) {
+                    throw new Error("Payment not found");
+                }
+
+                // Update user role
+                if (orderInfo.type === 'UPGRADE_PREMIUM') {
+                    const user = await User.findByIdAndUpdate(
+                        orderInfo.userId,
+                        { role: "member_premium" },
+                        { session }
+                    );
+
+                    if (!user) {
+                        throw new Error("User not found");
+                    }
+                }
+
+                await session.commitTransaction();
+                return { success: true, message: "Payment processed successfully" };
+            } catch (error) {
+                await session.abortTransaction();
+                throw error;
+            }
+        } else if (webhookData.code === "01") { // Cancel
+            await Payment.findOneAndUpdate(
+                { orderId: webhookData.data.orderCode.toString() },
+                {
+                    status: "CANCELLED",
+                    paymentData: JSON.stringify(webhookData.data)
+                },
+                { session }
             );
 
-            if (!user) {
-              throw new Error("User not found");
-            }
-          }
+            await session.commitTransaction();
+            return { success: true, message: "Payment cancelled" };
+        } else { // Error or other cases
+            await Payment.findOneAndUpdate(
+                { orderId: webhookData.data.orderCode.toString() },
+                {
+                    status: "FAILED",
+                    paymentData: JSON.stringify(webhookData.data)
+                },
+                { session }
+            );
 
-          await session.commitTransaction();
-          return { success: true, message: "Payment processed successfully" };
-        } catch (error) {
-          await session.abortTransaction();
-          throw error;
+            await session.commitTransaction();
+            return { success: true, message: "Payment failed" };
         }
-      } else if (webhookData.code === "01") { // Cancel
-        await Payment.findOneAndUpdate(
-          { orderId: webhookData.data.orderCode.toString() },
-          {
-            status: "CANCELLED",
-            paymentData: JSON.stringify(webhookData.data)
-          },
-          { session }
-        );
-
-        await session.commitTransaction();
-        return { success: true, message: "Payment cancelled" };
-      } else { // Error or other cases
-        await Payment.findOneAndUpdate(
-          { orderId: webhookData.data.orderCode.toString() },
-          {
-            status: "FAILED",
-            paymentData: JSON.stringify(webhookData.data)
-          },
-          { session }
-        );
-
-        await session.commitTransaction();
-        return { success: true, message: "Payment failed" };
-      }
 
     } catch (error: any) {
-      await session.abortTransaction();
-      console.error("Handle webhook error:", error);
-      return {
-        success: false,
-        message: error.message
-      };
+        await session.abortTransaction();
+        console.error("Handle webhook error:", error);
+        return {
+            success: false,
+            message: error.message
+        };
     } finally {
-      session.endSession();
+        session.endSession();
     }
-  }
+}
+
 }
