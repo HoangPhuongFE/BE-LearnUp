@@ -18,6 +18,8 @@ const node_1 = __importDefault(require("@payos/node"));
 const payment_model_1 = require("../models/payment.model");
 const User_1 = __importDefault(require("../models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 class PaymentService {
     static createUpgradePayment(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,15 +31,20 @@ class PaymentService {
                 if (user.role === "member_premium") {
                     throw new Error("User already has premium membership");
                 }
-                const orderCode = Date.now();
+                // Sử dụng số cho orderCode
+                const orderCode = Number(Date.now().toString().slice(-10));
+                const description = 'Premium';
+                console.log("Description length:", description.length); // Kiểm tra độ dài
+                console.log("OrderCode:", orderCode);
                 const paymentData = {
                     orderCode,
                     amount: this.PREMIUM_PRICE,
-                    description: 'Premium', // Sử dụng mô tả ngắn gọn
+                    description,
                     cancelUrl: `${process.env.BE_URL}/payment/cancel`,
                     returnUrl: `${process.env.BE_URL}/payment/success`,
                     webhookUrl: process.env.PAYOS_WEBHOOK_URL
                 };
+                console.log("Payment data:", paymentData);
                 const paymentResponse = yield this.payOS.createPaymentLink(paymentData);
                 // Lưu thông tin payment, bao gồm userId
                 yield payment_model_1.Payment.create({

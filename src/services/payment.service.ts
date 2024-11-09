@@ -4,6 +4,8 @@ import { Payment } from "../models/payment.model";
 import User, { IUser } from "../models/User";
 import { ServiceResponse, PaymentData } from "../types/payment.type";
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class PaymentService {
   private static payOS = new PayOS(
@@ -25,15 +27,23 @@ export class PaymentService {
         throw new Error("User already has premium membership");
       }
 
-      const orderCode = Date.now();
+      // Sử dụng số cho orderCode
+      const orderCode = Number(Date.now().toString().slice(-10));
+
+      const description = 'Premium';
+
+      console.log("Description length:", description.length); // Kiểm tra độ dài
+      console.log("OrderCode:", orderCode);
+
       const paymentData = {
         orderCode,
         amount: this.PREMIUM_PRICE,
-        description: 'Premium', // Sử dụng mô tả ngắn gọn
+        description,
         cancelUrl: `${process.env.BE_URL}/payment/cancel`,
         returnUrl: `${process.env.BE_URL}/payment/success`,
         webhookUrl: process.env.PAYOS_WEBHOOK_URL
       };
+      console.log("Payment data:", paymentData);
 
       const paymentResponse = await this.payOS.createPaymentLink(paymentData);
 
@@ -65,6 +75,7 @@ export class PaymentService {
       };
     }
   }
+
 
   static async handleWebhook(webhookData: any) {
     const session = await mongoose.startSession();
