@@ -38,6 +38,7 @@ class PaymentService {
                     returnUrl: `${process.env.BE_URL}/payment/success`,
                     webhookUrl: process.env.PAYOS_WEBHOOK_URL
                 };
+                //
                 const paymentResponse = yield this.payOS.createPaymentLink(paymentData);
                 // Lưu thông tin payment
                 yield payment_model_1.Payment.create({
