@@ -24,8 +24,7 @@ router.put('/:commentId', protect, updateComment); // Cập nhật bình luận
 router.delete('/:commentId', protect, deleteComment); // Xóa bình luận
 
 // Tạo bình luận với ảnh
-router.post('/:postId/comment-with-image', protect,uploadFiles, addCommentWithImage);  
-
+router.post('/:postId/comment-with-image', protect,uploadFiles, addCommentWithImage);
 
 // Tạo bình luận với ảnh cho video
 router.post('/:videoId/comment-with-image', protect,uploadFiles, addCommentWithImageToVideo);

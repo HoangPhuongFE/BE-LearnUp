@@ -18,8 +18,7 @@ const likeRoutes_1 = __importDefault(require("./routes/likeRoutes"));
 const ratingRoutes_1 = __importDefault(require("./routes/ratingRoutes"));
 const meetingRoutes_1 = __importDefault(require("./routes/meetingRoutes"));
 const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
-const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
-const orderRoutes_1 = __importDefault(require("./routes/orderRoutes"));
+const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const database_1 = __importDefault(require("./config/database"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -32,7 +31,9 @@ const cors = require('cors');
 const app = (0, express_1.default)();
 // Sử dụng morgan để log các request
 app.use((0, morgan_1.default)('dev')); // Thêm dòng này
-const allowedOrigins = ['http://localhost:5173', 'https://exe-201-project.vercel.app', 'https://learnup.work'];
+const allowedOrigins = ['http://localhost:5173',
+    'https://exe-201-project.vercel.app',
+    'https://learnup.work'];
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -61,8 +62,8 @@ app.use('/api/likes', likeRoutes_1.default);
 app.use('/api/rating', ratingRoutes_1.default);
 app.use('/api/meetings', meetingRoutes_1.default);
 app.use('/api/chat', chatRoutes_1.default);
-app.use('/api/payment', paymentRoutes_1.default);
-app.use('/api/order', orderRoutes_1.default);
+app.use('/api/payment', payment_routes_1.default);
+app.use("/api/payment", payment_routes_1.default);
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
     res.send('Welcome to LearnUp API');

@@ -13,9 +13,7 @@ import likeRoutes from './routes/likeRoutes';
 import ratingRoutes from './routes/ratingRoutes';
 import meetingRoutes from './routes/meetingRoutes';
 import chatRoutes from './routes/chatRoutes';
-import paymentRoutes from './routes/paymentRoutes';
-import orderRoutes from './routes/orderRoutes';
-
+import paymentRoutes from "./routes/payment.routes";
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -33,7 +31,9 @@ const app = express();
 // Sử dụng morgan để log các request
 app.use(morgan('dev')); // Thêm dòng này
 
-const allowedOrigins = ['http://localhost:5173', 'https://exe-201-project.vercel.app', 'https://learnup.work'];
+const allowedOrigins = ['http://localhost:5173',
+   'https://exe-201-project.vercel.app', 
+   'https://learnup.work'];
 
 app.use(cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -66,7 +66,8 @@ app.use('/api/rating', ratingRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/order', orderRoutes);
+app.use("/api/payment", paymentRoutes);
+
 
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
