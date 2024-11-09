@@ -26,12 +26,10 @@ export class PaymentService {
       }
 
       const orderCode = Date.now();
-
-      // Tạo payment URL - trả về URL này cho FE
       const paymentData = {
         orderCode,
         amount: this.PREMIUM_PRICE,
-        description: `UID:${userId},Upgrade`,  // Rút gọn mô tả ở đây
+        description: `UID:${userId}`,  // Chỉ bao gồm UID để rút ngắn mô tả
         cancelUrl: `${process.env.BE_URL}/payment/cancel`,
         returnUrl: `${process.env.BE_URL}/payment/success`,
         webhookUrl: process.env.PAYOS_WEBHOOK_URL
