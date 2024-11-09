@@ -29,7 +29,7 @@ export class PaymentService {
       const paymentData = {
         orderCode,
         amount: this.PREMIUM_PRICE,
-        description: 'Upgrade to Premium', // Sử dụng mô tả ngắn gọn
+        description: 'Premium', // Sử dụng mô tả ngắn gọn
         cancelUrl: `${process.env.BE_URL}/payment/cancel`,
         returnUrl: `${process.env.BE_URL}/payment/success`,
         webhookUrl: process.env.PAYOS_WEBHOOK_URL
