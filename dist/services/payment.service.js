@@ -34,14 +34,9 @@ class PaymentService {
                 const paymentData = {
                     orderCode,
                     amount: this.PREMIUM_PRICE,
-                    description: JSON.stringify({
-                        userId,
-                        type: 'UPGRADE_PREMIUM'
-                    }),
-                    // FE sẽ handle các URL này sau
+                    description: `UID:${userId},Upgrade`, // Rút gọn mô tả ở đây
                     cancelUrl: `${process.env.BE_URL}/payment/cancel`,
                     returnUrl: `${process.env.BE_URL}/payment/success`,
-                    // URL webhook của BE
                     webhookUrl: process.env.PAYOS_WEBHOOK_URL
                 };
                 const paymentResponse = yield this.payOS.createPaymentLink(paymentData);
