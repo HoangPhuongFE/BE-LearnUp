@@ -33,13 +33,13 @@ class PaymentService {
                 const paymentData = {
                     orderCode,
                     amount: this.PREMIUM_PRICE,
-                    description: `UID:${userId}`, // Chỉ bao gồm UID để rút ngắn mô tả
+                    description: 'Upgrade to Premium', // Sử dụng mô tả ngắn gọn
                     cancelUrl: `${process.env.BE_URL}/payment/cancel`,
                     returnUrl: `${process.env.BE_URL}/payment/success`,
                     webhookUrl: process.env.PAYOS_WEBHOOK_URL
                 };
                 const paymentResponse = yield this.payOS.createPaymentLink(paymentData);
-                // Lưu thông tin payment
+                // Lưu thông tin payment, bao gồm userId
                 yield payment_model_1.Payment.create({
                     orderId: orderCode.toString(),
                     userId,
@@ -77,17 +77,6 @@ class PaymentService {
                 if (!isValidSignature) {
                     throw new Error("Invalid webhook signature");
                 }
-                let orderInfo;
-                try {
-                    // Kiểm tra nếu description là JSON hợp lệ, nếu không gán trực tiếp chuỗi
-                    orderInfo = typeof webhookData.data.description === 'string' && webhookData.data.description.startsWith('{')
-                        ? JSON.parse(webhookData.data.description)
-                        : { description: webhookData.data.description };
-                }
-                catch (error) {
-                    console.error("Error parsing description:", error);
-                    throw new Error("Invalid description format - expected JSON.");
-                }
                 if (webhookData.code === "00") { // Success
                     try {
                         // Update payment status
@@ -98,9 +87,12 @@ class PaymentService {
                         if (!payment) {
                             throw new Error("Payment not found");
                         }
-                        // Update user role
-                        const userId = orderInfo.description.split(':')[1];
-                        const user = yield User_1.default.findByIdAndUpdate(userId, { role: "member_premium" }, { session });
+                        // Update user role using userId from payment
+                        const user = yield User_1.default.findByIdAndUpdate(payment.userId, {
+                            role: "member_premium",
+                            premiumStartDate: new Date(),
+                            premiumEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+                        }, { session, new: true });
                         if (!user) {
                             throw new Error("User not found");
                         }
