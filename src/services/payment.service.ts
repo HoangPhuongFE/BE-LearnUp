@@ -41,8 +41,8 @@ export class PaymentService {
         description,
         cancelUrl: `${process.env.BE_URL}/payment/cancel`,
         returnUrl: `${process.env.BE_URL}/payment/success`,
-        webhookUrl: process.env.PAYOS_WEBHOOK_URL
-      };
+        webhookUrl: `${process.env.BE_URL}/api/payment/webhook`
+            };
 
       // Create payment link via PayOS
       const paymentResponse = await this.payOS.createPaymentLink(paymentData);
