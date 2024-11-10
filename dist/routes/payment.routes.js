@@ -11,4 +11,11 @@ const router = express_1.default.Router();
 router.post("/upgrade", authMiddleware_1.protect, payment_controller_1.PaymentController.createUpgradePayment);
 router.post("/webhook", payment_controller_1.PaymentController.handleWebhook);
 router.get('/status/:orderCode', authMiddleware_1.protect, payment_controller_1.PaymentController.getPaymentStatus);
+// Thay vì chuyển hướng, gửi phản hồi trực tiếp
+router.get('/success', (req, res) => {
+    res.send('<h1>Thanh toán thành công!</h1><p>Cảm ơn bạn đã mua hàng.</p>');
+});
+router.get('/cancel', (req, res) => {
+    res.send('<h1>Thanh toán bị hủy</h1><p>Giao dịch của bạn đã bị hủy.</p>');
+});
 exports.default = router;
