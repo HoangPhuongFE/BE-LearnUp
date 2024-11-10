@@ -1,4 +1,5 @@
 // src/services/email.service.ts
+/*
 import nodemailer from 'nodemailer';
 import moment from 'moment-timezone';
 
@@ -177,6 +178,155 @@ export class EmailService {
 
     try {
       await this.transporter.sendMail(mailOptions);
+      console.log('Payment failed email sent');
+    } catch (error) {
+      console.error('Send payment failed email error:', error);
+    }
+  }
+}
+  */
+
+// src/services/email.service.ts
+
+import nodemailer from 'nodemailer';
+import moment from 'moment-timezone';
+
+export class EmailService {
+  // Khởi tạo transporter cho nodemailer
+  private static transporter = nodemailer.createTransport({
+    service: 'gmail', // Hoặc sử dụng SMTP server khác nếu không dùng Gmail
+    auth: {
+      user: process.env.EMAIL_USER, // Địa chỉ email của bạn
+      pass: process.env.EMAIL_PASSWORD // Mật khẩu ứng dụng hoặc mật khẩu email
+    }
+  });
+
+  // Phương thức định dạng ngày giờ theo múi giờ Việt Nam
+  private static formatDate(date: Date): string {
+    return moment(date)
+      .tz('Asia/Ho_Chi_Minh')
+      .format('HH:mm - DD/MM/YYYY');
+  }
+
+  // Phương thức gửi email chung
+  static async sendMail(mailOptions: nodemailer.SendMailOptions) {
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log('Email sent:', mailOptions.to);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  }
+
+  // Phương thức gửi email nhắc nhở sắp hết hạn Premium
+  static async sendPremiumExpirationReminder(userEmail: string, data: {
+    userName: string;
+    endDate: Date | undefined; // Chấp nhận Date hoặc undefined
+    daysLeft: number;
+  }) {
+    if (!data.endDate) {
+      console.error('Cannot send expiration reminder email. endDate is undefined.');
+      return;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Nhắc nhở sắp hết hạn gói Premium - LearnUp',
+      html: `
+        <div>
+          <p>Xin chào ${data.userName},</p>
+          <p>Gói Premium của bạn sẽ hết hạn vào ngày <strong>${this.formatDate(data.endDate)}</strong>, còn ${data.daysLeft} ngày nữa.</p>
+          <p>Vui lòng gia hạn để tiếp tục sử dụng các dịch vụ Premium của chúng tôi.</p>
+          <p>Trân trọng,<br/>LearnUp Team</p>
+        </div>
+      `
+    };
+
+    try {
+      await this.sendMail(mailOptions);
+      console.log('Premium expiration reminder email sent to', userEmail);
+    } catch (error) {
+      console.error('Error sending premium expiration reminder email:', error);
+    }
+  }
+
+  // Phương thức gửi email thông báo Premium đã hết hạn
+  static async sendPremiumExpiredEmail(userEmail: string, data: {
+    userName: string;
+    expiredDate: Date | undefined; // Chấp nhận Date hoặc undefined
+  }) {
+    if (!data.expiredDate) {
+      console.error('Cannot send expired email. expiredDate is undefined.');
+      return;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Thông báo hết hạn gói Premium - LearnUp',
+      html: `
+        <div>
+          <p>Xin chào ${data.userName},</p>
+          <p>Gói Premium của bạn đã hết hạn vào ngày <strong>${this.formatDate(data.expiredDate)}</strong>.</p>
+          <p>Để tiếp tục sử dụng các dịch vụ Premium, vui lòng gia hạn gói của bạn.</p>
+          <p>Trân trọng,<br/>LearnUp Team</p>
+        </div>
+      `
+    };
+
+    try {
+      await this.sendMail(mailOptions);
+      console.log('Premium expired email sent to', userEmail);
+    } catch (error) {
+      console.error('Error sending premium expired email:', error);
+    }
+  }
+
+  // Phương thức gửi email xác nhận thanh toán thành công
+  static async sendPaymentSuccessEmail(userEmail: string, data: {
+    orderCode: string;
+    amount: number;
+    paymentMethod?: string;
+    startDate: Date;
+    endDate: Date;
+    userName: string;
+  }) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Thanh toán thành công - LearnUp',
+      html: `
+        <!-- Nội dung email thành công (giữ nguyên như bạn đã có) -->
+      `
+    };
+
+    try {
+      await this.sendMail(mailOptions);
+      console.log('Payment success email sent');
+    } catch (error) {
+      console.error('Send payment success email error:', error);
+    }
+  }
+
+  // Phương thức gửi email thông báo thanh toán thất bại
+  static async sendPaymentFailedEmail(userEmail: string, data: {
+    orderCode: string;
+    reason: string;
+    userName: string;
+    cancelTime: Date;
+  }) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Thông báo thanh toán không thành công - LearnUp',
+      html: `
+        <!-- Nội dung email thất bại (giữ nguyên như bạn đã có) -->
+      `
+    };
+
+    try {
+      await this.sendMail(mailOptions);
       console.log('Payment failed email sent');
     } catch (error) {
       console.error('Send payment failed email error:', error);

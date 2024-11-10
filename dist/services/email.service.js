@@ -1,43 +1,46 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EmailService = void 0;
 // src/services/email.service.ts
-const nodemailer_1 = __importDefault(require("nodemailer"));
-const moment_timezone_1 = __importDefault(require("moment-timezone"));
-class EmailService {
-    static sendMail(mailOptions) {
-        throw new Error('Method not implemented.');
+/*
+import nodemailer from 'nodemailer';
+import moment from 'moment-timezone';
+
+export class EmailService {
+  static sendMail(mailOptions: { from: string | undefined; to: string; subject: string; html: string; }) {
+      throw new Error('Method not implemented.');
+  }
+  static sendPremiumExpirationReminder(email: string, arg1: { userName: string; endDate: Date | undefined; daysLeft: number; }) {
+      throw new Error('Method not implemented.');
+  }
+  static sendPremiumExpiredEmail(email: string, arg1: { userName: string; expiredDate: Date | undefined; }) {
+      throw new Error('Method not implemented.');
+  }
+  private static transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
     }
-    static sendPremiumExpirationReminder(email, arg1) {
-        throw new Error('Method not implemented.');
-    }
-    static sendPremiumExpiredEmail(email, arg1) {
-        throw new Error('Method not implemented.');
-    }
-    static formatDate(date) {
-        return (0, moment_timezone_1.default)(date)
-            .tz('Asia/Ho_Chi_Minh')
-            .format('HH:mm - DD/MM/YYYY');
-    }
-    static sendPaymentSuccessEmail(userEmail, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: userEmail,
-                subject: 'Thanh toán thành công - LearnUp',
-                html: `
+  });
+
+  private static formatDate(date: Date): string {
+    return moment(date)
+      .tz('Asia/Ho_Chi_Minh')
+      .format('HH:mm - DD/MM/YYYY');
+  }
+
+  static async sendPaymentSuccessEmail(userEmail: string, data: {
+    orderCode: string;
+    amount: number;
+    paymentMethod?: string;
+    startDate: Date;
+    endDate: Date;
+    userName: string;
+  }) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Thanh toán thành công - LearnUp',
+      html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
             <h1 style="color: #2563eb;">LearnUp</h1>
@@ -100,23 +103,27 @@ class EmailService {
           </div>
         </div>
       `
-            };
-            try {
-                yield this.transporter.sendMail(mailOptions);
-                console.log('Payment success email sent');
-            }
-            catch (error) {
-                console.error('Send payment success email error:', error);
-            }
-        });
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log('Payment success email sent');
+    } catch (error) {
+      console.error('Send payment success email error:', error);
     }
-    static sendPaymentFailedEmail(userEmail, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: userEmail,
-                subject: 'Thông báo thanh toán không thành công - LearnUp',
-                html: `
+  }
+
+  static async sendPaymentFailedEmail(userEmail: string, data: {
+    orderCode: string;
+    reason: string;
+    userName: string;
+    cancelTime: Date;
+  }) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: 'Thông báo thanh toán không thành công - LearnUp',
+      html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 20px;">
             <h1 style="color: #2563eb;">LearnUp</h1>
@@ -148,8 +155,8 @@ class EmailService {
             </div>
 
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${process.env.FE_URL}/premium" 
-                 style="background-color: #2563eb; color: white; padding: 12px 24px; 
+              <a href="${process.env.FE_URL}/premium"
+                 style="background-color: #2563eb; color: white; padding: 12px 24px;
                         text-decoration: none; border-radius: 6px;">
                 Nâng cấp Premium
               </a>
@@ -168,9 +175,144 @@ class EmailService {
           </div>
         </div>
       `
-            };
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log('Payment failed email sent');
+    } catch (error) {
+      console.error('Send payment failed email error:', error);
+    }
+  }
+}
+  */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EmailService = void 0;
+// src/services/email.service.ts
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
+class EmailService {
+    // Phương thức định dạng ngày giờ theo múi giờ Việt Nam
+    static formatDate(date) {
+        return (0, moment_timezone_1.default)(date)
+            .tz('Asia/Ho_Chi_Minh')
+            .format('HH:mm - DD/MM/YYYY');
+    }
+    // Phương thức gửi email chung
+    static sendMail(mailOptions) {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.transporter.sendMail(mailOptions);
+                console.log('Email sent:', mailOptions.to);
+            }
+            catch (error) {
+                console.error('Error sending email:', error);
+            }
+        });
+    }
+    // Phương thức gửi email nhắc nhở sắp hết hạn Premium
+    static sendPremiumExpirationReminder(userEmail, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!data.endDate) {
+                console.error('Cannot send expiration reminder email. endDate is undefined.');
+                return;
+            }
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'Nhắc nhở sắp hết hạn gói Premium - LearnUp',
+                html: `
+        <div>
+          <p>Xin chào ${data.userName},</p>
+          <p>Gói Premium của bạn sẽ hết hạn vào ngày <strong>${this.formatDate(data.endDate)}</strong>, còn ${data.daysLeft} ngày nữa.</p>
+          <p>Vui lòng gia hạn để tiếp tục sử dụng các dịch vụ Premium của chúng tôi.</p>
+          <p>Trân trọng,<br/>LearnUp Team</p>
+        </div>
+      `
+            };
+            try {
+                yield this.sendMail(mailOptions);
+                console.log('Premium expiration reminder email sent to', userEmail);
+            }
+            catch (error) {
+                console.error('Error sending premium expiration reminder email:', error);
+            }
+        });
+    }
+    // Phương thức gửi email thông báo Premium đã hết hạn
+    static sendPremiumExpiredEmail(userEmail, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!data.expiredDate) {
+                console.error('Cannot send expired email. expiredDate is undefined.');
+                return;
+            }
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'Thông báo hết hạn gói Premium - LearnUp',
+                html: `
+        <div>
+          <p>Xin chào ${data.userName},</p>
+          <p>Gói Premium của bạn đã hết hạn vào ngày <strong>${this.formatDate(data.expiredDate)}</strong>.</p>
+          <p>Để tiếp tục sử dụng các dịch vụ Premium, vui lòng gia hạn gói của bạn.</p>
+          <p>Trân trọng,<br/>LearnUp Team</p>
+        </div>
+      `
+            };
+            try {
+                yield this.sendMail(mailOptions);
+                console.log('Premium expired email sent to', userEmail);
+            }
+            catch (error) {
+                console.error('Error sending premium expired email:', error);
+            }
+        });
+    }
+    // Phương thức gửi email xác nhận thanh toán thành công
+    static sendPaymentSuccessEmail(userEmail, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'Thanh toán thành công - LearnUp',
+                html: `
+        <!-- Nội dung email thành công (giữ nguyên như bạn đã có) -->
+      `
+            };
+            try {
+                yield this.sendMail(mailOptions);
+                console.log('Payment success email sent');
+            }
+            catch (error) {
+                console.error('Send payment success email error:', error);
+            }
+        });
+    }
+    // Phương thức gửi email thông báo thanh toán thất bại
+    static sendPaymentFailedEmail(userEmail, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'Thông báo thanh toán không thành công - LearnUp',
+                html: `
+        <!-- Nội dung email thất bại (giữ nguyên như bạn đã có) -->
+      `
+            };
+            try {
+                yield this.sendMail(mailOptions);
                 console.log('Payment failed email sent');
             }
             catch (error) {
@@ -180,10 +322,11 @@ class EmailService {
     }
 }
 exports.EmailService = EmailService;
+// Khởi tạo transporter cho nodemailer
 EmailService.transporter = nodemailer_1.default.createTransport({
-    service: 'gmail',
+    service: 'gmail', // Hoặc sử dụng SMTP server khác nếu không dùng Gmail
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+        user: process.env.EMAIL_USER, // Địa chỉ email của bạn
+        pass: process.env.EMAIL_PASSWORD // Mật khẩu ứng dụng hoặc mật khẩu email
     }
 });
