@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserById = exports.updateUser = exports.resetPassword = exports.forgetPassword = exports.loginUserController = exports.registerUser = void 0;
+exports.getUserInfo = exports.getUserById = exports.updateUser = exports.resetPassword = exports.forgetPassword = exports.loginUserController = exports.registerUser = void 0;
 const authService_1 = require("../services/authService");
 const sendEmail_1 = __importDefault(require("../utils/sendEmail"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
@@ -155,3 +155,28 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getUserById = getUserById;
+const getUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ message: 'Không tìm thấy user' });
+        }
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            permissions: user.permissions,
+            address: user.address,
+            phone: user.phone,
+            avatar: user.avatar,
+            gender: user.gender,
+            birthDate: user.birthDate,
+            about: user.about,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.getUserInfo = getUserInfo;

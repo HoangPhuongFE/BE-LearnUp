@@ -1,3 +1,4 @@
+// models/User.ts
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
@@ -13,8 +14,10 @@ export interface IUser extends Document {
   gender?: 'nam' | 'nu' | 'khac';
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
-  premiumStartDate?: Date;  
-  premiumEndDate?: Date;    
+  premiumStartDate?: Date;
+  premiumEndDate?: Date;
+  birthDate?: Date;
+  about?: string;
   matchPassword(enteredPassword: string): Promise<boolean>;
   _id: mongoose.Types.ObjectId;
 }
@@ -54,11 +57,9 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   gender: {
     type: String,
     enum: ['nam', 'nu', 'khac'],
-    
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
-
   premiumStartDate: {
     type: Date,
     default: null,
@@ -66,6 +67,12 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   premiumEndDate: {
     type: Date,
     default: null,
+  },
+  birthDate: {
+    type: Date,
+  },
+  about: {
+    type: String,
   },
 });
 

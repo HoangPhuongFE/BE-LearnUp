@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// models/User.ts
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.default.Schema({
@@ -59,6 +60,12 @@ const userSchema = new mongoose_1.default.Schema({
     premiumEndDate: {
         type: Date,
         default: null,
+    },
+    birthDate: {
+        type: Date,
+    },
+    about: {
+        type: String,
     },
 });
 // Mã hóa mật khẩu trước khi lưu vào DB

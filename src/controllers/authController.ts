@@ -6,6 +6,7 @@ import User from '../models/User';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AuthRequest } from '../middlewares/authMiddleware';
 
 // Đăng ký người dùng
 export const registerUser = async (req: Request, res: Response) => {
@@ -159,5 +160,29 @@ export const getUserById = async (req: Request, res: Response) => {
       // Xử lý lỗi khác
       res.status(500).json({ message: 'Error retrieving user', error: 'Unknown error' });
     }
+  }
+};
+export const getUserInfo = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'Không tìm thấy user' });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      permissions: user.permissions,
+      address: user.address,
+      phone: user.phone,
+      avatar: user.avatar,
+      gender: user.gender,
+      birthDate: user.birthDate,
+      about: user.about,
+    });
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message });
   }
 };
