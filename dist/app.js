@@ -19,12 +19,10 @@ const ratingRoutes_1 = __importDefault(require("./routes/ratingRoutes"));
 const meetingRoutes_1 = __importDefault(require("./routes/meetingRoutes"));
 const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
 const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
+const premium_service_1 = require("./services/premium.service");
 const database_1 = __importDefault(require("./config/database"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-//console.log("PAYOS_CLIENT_ID:", process.env.PAYOS_CLIENT_ID);
-//console.log("PAYOS_API_KEY:", process.env.PAYOS_API_KEY);
-//console.log("PAYOS_CHECKSUM_KEY:", process.env.PAYOS_CHECKSUM_KEY);
 const cors = require('cors');
 // Kết nối cơ sở dữ liệu
 (0, database_1.default)();
@@ -64,6 +62,7 @@ app.use('/api/meetings', meetingRoutes_1.default);
 app.use('/api/chat', chatRoutes_1.default);
 app.use('/api/payment', payment_routes_1.default);
 app.use("/api/payment", payment_routes_1.default);
+premium_service_1.PremiumService.initExpirationReminders();
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
     res.send('Welcome to LearnUp API');

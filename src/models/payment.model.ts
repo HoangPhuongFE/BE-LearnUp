@@ -30,7 +30,10 @@ const paymentSchema = new mongoose.Schema({
   bankCode: String,
   bankName: String,
   paymentTime: Date,
+  startDate: Date,
+  endDate: Date,
   cancelTime: Date,
+  cancelReason: String,
   transactionId: String,
   paymentLinkId: String,
   paymentData: String

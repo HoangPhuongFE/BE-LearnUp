@@ -10,4 +10,5 @@ const authMiddleware_1 = require("../middlewares/authMiddleware");
 const router = express_1.default.Router();
 router.post("/upgrade", authMiddleware_1.protect, payment_controller_1.PaymentController.createUpgradePayment);
 router.post("/webhook", payment_controller_1.PaymentController.handleWebhook);
+router.get('/status/:orderCode', authMiddleware_1.protect, payment_controller_1.PaymentController.getPaymentStatus);
 exports.default = router;

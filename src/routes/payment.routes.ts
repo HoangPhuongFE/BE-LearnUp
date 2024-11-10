@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post("/upgrade", protect, PaymentController.createUpgradePayment);
 router.post("/webhook", PaymentController.handleWebhook);
+router.get('/status/:orderCode', protect, PaymentController.getPaymentStatus);
 
 export default router;
