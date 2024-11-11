@@ -6,27 +6,15 @@ import User from '../models/User';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const pageSize = Number(req.query.pageSize) || 10; // Số lượng người dùng mỗi trang
-    const page = Number(req.query.pageNumber) || 1;    // Trang hiện tại
-
     const keyword = req.query.keyword
-      ? {
-        name: { $regex: req.query.keyword, $options: 'i' },
-      }
+      ? { name: { $regex: req.query.keyword, $options: 'i' } }
       : {};
 
-    const count = await User.countDocuments({ ...keyword });
-    const users = await User.find({ ...keyword })
-      .select('-password')
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
+    const users = await User.find({ ...keyword }).select('-password'); // Lấy toàn bộ danh sách người dùng theo điều kiện tìm kiếm
 
     res.status(200).json({
       message: 'Lấy danh sách người dùng thành công',
       users,
-      page,
-      pages: Math.ceil(count / pageSize),
-      total: count,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -36,6 +24,8 @@ export const getUsers = async (req: Request, res: Response) => {
     }
   }
 };
+
+
 
 // Update user roles and permissions
 export const updateUserRoleAndPermissions = async (req: Request, res: Response) => {

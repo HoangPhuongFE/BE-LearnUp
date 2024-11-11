@@ -17,24 +17,13 @@ const User_1 = __importDefault(require("../models/User"));
 // controllers/adminController.ts
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pageSize = Number(req.query.pageSize) || 10; // Số lượng người dùng mỗi trang
-        const page = Number(req.query.pageNumber) || 1; // Trang hiện tại
         const keyword = req.query.keyword
-            ? {
-                name: { $regex: req.query.keyword, $options: 'i' },
-            }
+            ? { name: { $regex: req.query.keyword, $options: 'i' } }
             : {};
-        const count = yield User_1.default.countDocuments(Object.assign({}, keyword));
-        const users = yield User_1.default.find(Object.assign({}, keyword))
-            .select('-password')
-            .limit(pageSize)
-            .skip(pageSize * (page - 1));
+        const users = yield User_1.default.find(Object.assign({}, keyword)).select('-password'); // Lấy toàn bộ danh sách người dùng theo điều kiện tìm kiếm
         res.status(200).json({
             message: 'Lấy danh sách người dùng thành công',
             users,
-            page,
-            pages: Math.ceil(count / pageSize),
-            total: count,
         });
     }
     catch (error) {
