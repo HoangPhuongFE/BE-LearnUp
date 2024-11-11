@@ -8,9 +8,9 @@ export const getUsers = async (req: Request, res: Response) => {
   try {
     const keyword = req.query.keyword
       ? { name: { $regex: req.query.keyword, $options: 'i' } }
-      : {};
+      : {}; // Nếu không có keyword, sẽ lấy tất cả người dùng
 
-    const users = await User.find({ ...keyword }).select('-password'); // Lấy toàn bộ danh sách người dùng theo điều kiện tìm kiếm
+    const users = await User.find({ ...keyword }).select('-password'); // Lấy danh sách người dùng theo điều kiện tìm kiếm
 
     res.status(200).json({
       message: 'Lấy danh sách người dùng thành công',

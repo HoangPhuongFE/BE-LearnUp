@@ -19,8 +19,8 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const keyword = req.query.keyword
             ? { name: { $regex: req.query.keyword, $options: 'i' } }
-            : {};
-        const users = yield User_1.default.find(Object.assign({}, keyword)).select('-password'); // Lấy toàn bộ danh sách người dùng theo điều kiện tìm kiếm
+            : {}; // Nếu không có keyword, sẽ lấy tất cả người dùng
+        const users = yield User_1.default.find(Object.assign({}, keyword)).select('-password'); // Lấy danh sách người dùng theo điều kiện tìm kiếm
         res.status(200).json({
             message: 'Lấy danh sách người dùng thành công',
             users,
