@@ -53,7 +53,7 @@ const loginUserController = (req, res) => __awaiter(void 0, void 0, void 0, func
             return res.status(401).json({ message: 'Mật khẩu không đúng' });
         }
         // Tạo token JWT
-        const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         // Trả về thông tin người dùng và token
         res.status(200).json({
             _id: user._id,

@@ -6,11 +6,8 @@ import User from '../models/User';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const keyword = req.query.keyword
-      ? { name: { $regex: req.query.keyword, $options: 'i' } }
-      : {}; // Nếu không có keyword, sẽ lấy tất cả người dùng
-
-    const users = await User.find({ ...keyword }).select('-password'); // Lấy danh sách người dùng theo điều kiện tìm kiếm
+    // Không sử dụng keyword, lấy tất cả người dùng
+    const users = await User.find().select('-password'); // Lấy tất cả người dùng
 
     res.status(200).json({
       message: 'Lấy danh sách người dùng thành công',
@@ -20,10 +17,11 @@ export const getUsers = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng', error: error.message });
     } else {
-      res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
+      res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng', error: 'Unknown error' });
     }
   }
 };
+
 
 
 

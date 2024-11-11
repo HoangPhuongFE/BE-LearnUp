@@ -17,10 +17,8 @@ const User_1 = __importDefault(require("../models/User"));
 // controllers/adminController.ts
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const keyword = req.query.keyword
-            ? { name: { $regex: req.query.keyword, $options: 'i' } }
-            : {}; // Nếu không có keyword, sẽ lấy tất cả người dùng
-        const users = yield User_1.default.find(Object.assign({}, keyword)).select('-password'); // Lấy danh sách người dùng theo điều kiện tìm kiếm
+        // Không sử dụng keyword, lấy tất cả người dùng
+        const users = yield User_1.default.find().select('-password'); // Lấy tất cả người dùng
         res.status(200).json({
             message: 'Lấy danh sách người dùng thành công',
             users,
@@ -31,7 +29,7 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng', error: error.message });
         }
         else {
-            res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
+            res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng', error: 'Unknown error' });
         }
     }
 });
