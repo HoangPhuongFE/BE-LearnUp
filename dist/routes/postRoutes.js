@@ -12,4 +12,5 @@ router.get('/', postController_1.getPosts);
 router.put('/:postId', authMiddleware_1.protect, postController_1.updatePost);
 router.delete('/:postId', authMiddleware_1.protect, postController_1.deletePost);
 router.get('/search', postController_1.searchPosts);
+router.get('/:postId', authMiddleware_1.protect, postController_1.getPostById);
 exports.default = router;

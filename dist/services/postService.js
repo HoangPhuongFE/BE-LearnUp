@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts = exports.createPost = void 0;
+exports.getPostById = exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts = exports.createPost = void 0;
 const fuzzy_search_1 = __importDefault(require("fuzzy-search"));
 const Post_1 = __importDefault(require("../models/Post"));
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -74,3 +74,10 @@ const searchPosts = (query, tags) => __awaiter(void 0, void 0, void 0, function*
     return posts;
 });
 exports.searchPosts = searchPosts;
+const getPostById = (postId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!mongoose_1.default.Types.ObjectId.isValid(postId)) {
+        throw new Error('Invalid post ID');
+    }
+    return yield Post_1.default.findById(postId).populate('authorId', 'name');
+});
+exports.getPostById = getPostById;

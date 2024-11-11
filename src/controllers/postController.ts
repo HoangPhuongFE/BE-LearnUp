@@ -85,3 +85,23 @@ export const searchPosts = async (req: Request, res: Response) => {
     }
   }
 };
+
+
+// Lấy bài viết theo ID
+export const getPostById = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await PostService.getPostById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    res.status(200).json(post);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Error fetching post', error: error.message });
+    } else {
+      res.status(500).json({ message: 'Unknown error occurred' });
+    }
+  }
+};

@@ -70,3 +70,9 @@ export const searchPosts = async (query: string, tags: string[]): Promise<any> =
 
   return posts;
 };
+export const getPostById = async (postId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    throw new Error('Invalid post ID');
+  }
+  return await Post.findById(postId).populate('authorId', 'name');
+};

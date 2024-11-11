@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts = exports.createPost = void 0;
+exports.getPostById = exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts = exports.createPost = void 0;
 const PostService = __importStar(require("../services/postService"));
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -125,3 +125,23 @@ const searchPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.searchPosts = searchPosts;
+// Lấy bài viết theo ID
+const getPostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { postId } = req.params;
+    try {
+        const post = yield PostService.getPostById(postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.status(200).json(post);
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: 'Error fetching post', error: error.message });
+        }
+        else {
+            res.status(500).json({ message: 'Unknown error occurred' });
+        }
+    }
+});
+exports.getPostById = getPostById;
