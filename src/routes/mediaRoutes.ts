@@ -18,9 +18,9 @@ router.get('/allmedia', getAllMedia);
 router.get('/:id', getMediaById);
 
 // Các tuyến đường bảo vệ với kiểm tra quyền
-router.post('/', protect, checkPermission('create_media'), createMedia);
-router.put('/update/:id', protect, checkPermission('update_media'), updateMedia);
-router.delete('/delete/:id', protect, checkPermission('delete_media'), deleteMedia);
+router.post('/', protect, checkPermission('manage_media'), createMedia);
+router.put('/update/:id', protect, checkPermission('manage_media'), updateMedia);
+router.delete('/delete/:id', protect, checkPermission('manage_media'), deleteMedia);
 
 // Các tuyến đường lồng cho feedback và evaluation
 router.use('/:mediaId/feedback',protect, feedbackRoutes);

@@ -15,7 +15,7 @@ router.get('/', getFeedbackByMedia);
 
 // Các tuyến đường bảo vệ với kiểm tra quyền
 router.post('/', protect, createFeedback);
-router.put('/:feedbackId', protect, checkPermission('update_feedback'), updateFeedback);
-router.delete('/:feedbackId', protect, checkPermission('delete_feedback'), deleteFeedback);
+router.put('/:feedbackId', protect, updateFeedback);
+router.delete('/:feedbackId', protect, deleteFeedback);
 
 export default router;

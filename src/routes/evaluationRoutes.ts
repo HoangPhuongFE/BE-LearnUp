@@ -14,7 +14,7 @@ const router = express.Router({ mergeParams: true });
 router.get('/', getEvaluationsByMedia);
 
 // Các tuyến đường bảo vệ với kiểm tra quyền
-router.post('/', protect, checkPermission('create_evaluation'), createOrUpdateEvaluation);
-router.delete('/:evaluationId', protect, checkPermission('delete_evaluation'), deleteEvaluation);
+router.post('/', protect, createOrUpdateEvaluation);
+router.delete('/:evaluationId', protect, deleteEvaluation);
 
 export default router;
