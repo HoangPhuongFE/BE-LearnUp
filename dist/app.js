@@ -19,6 +19,9 @@ const ratingRoutes_1 = __importDefault(require("./routes/ratingRoutes"));
 const meetingRoutes_1 = __importDefault(require("./routes/meetingRoutes"));
 const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
 const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
+const mediaRoutes_1 = __importDefault(require("./routes/mediaRoutes"));
+const evaluationRoutes_1 = __importDefault(require("./routes/evaluationRoutes"));
+const feedbackRoutes_1 = __importDefault(require("./routes/feedbackRoutes"));
 const database_1 = __importDefault(require("./config/database"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -61,6 +64,9 @@ app.use('/api/meetings', meetingRoutes_1.default);
 app.use('/api/chat', chatRoutes_1.default);
 app.use('/api/payment', payment_routes_1.default);
 app.use("/api/payment", payment_routes_1.default);
+app.use('/api/media', mediaRoutes_1.default);
+app.use('/api/evaluation', evaluationRoutes_1.default);
+app.use('/api/feedback', feedbackRoutes_1.default);
 // Thêm route cho đường dẫn gốc '/'
 app.get('/', (req, res) => {
     res.send('Welcome to LearnUp API');

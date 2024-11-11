@@ -14,6 +14,9 @@ import ratingRoutes from './routes/ratingRoutes';
 import meetingRoutes from './routes/meetingRoutes';
 import chatRoutes from './routes/chatRoutes';
 import paymentRoutes from "./routes/payment.routes";
+import media from './routes/mediaRoutes';
+import evaluation from './routes/evaluationRoutes';
+import feedback from './routes/feedbackRoutes';
 import connectDB from './config/database';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -64,6 +67,9 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use('/api/media', media);
+app.use('/api/evaluation', evaluation);
+app.use('/api/feedback', feedback);
 
 
 
