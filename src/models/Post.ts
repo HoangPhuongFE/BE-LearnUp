@@ -5,6 +5,7 @@ interface IPost extends Document {
   content: string;
   authorId: Schema.Types.ObjectId;
   tags: string[];
+  image: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,6 +15,7 @@ const postSchema = new Schema<IPost>({
   content: { type: String, required: true },
   authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   tags: [{ type: String, trim: true }],
+  image: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

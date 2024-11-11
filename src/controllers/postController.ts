@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import * as PostService from '../services/postService';
 
 export const createPost = async (req: Request, res: Response) => {
-  const { title, content, tags } = req.body;
+  const { title, content, tags , image } = req.body;
   const authorId = req.user?.id;  
 
   try {
-    const post = await PostService.createPost(title, content, tags, authorId);
+    const post = await PostService.createPost(title, content, tags, image , authorId);
     res.status(201).json(post);
   } catch (error) {
     if (error instanceof Error) {

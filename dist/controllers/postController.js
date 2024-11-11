@@ -36,10 +36,10 @@ exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts
 const PostService = __importStar(require("../services/postService"));
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const { title, content, tags } = req.body;
+    const { title, content, tags, image } = req.body;
     const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     try {
-        const post = yield PostService.createPost(title, content, tags, authorId);
+        const post = yield PostService.createPost(title, content, tags, image, authorId);
         res.status(201).json(post);
     }
     catch (error) {

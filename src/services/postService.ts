@@ -3,7 +3,7 @@ import FuzzySearch from 'fuzzy-search';
 import Post  from '../models/Post';
 import mongoose from 'mongoose';
 
-export const createPost = async (title: string, content: string, tags: string[], authorId: string) => {
+export const createPost = async (title: string, content: string, tags: string[],image: string[], authorId: string) => {
   // Kiểm tra xem authorId có phải là ObjectId hợp lệ không
   if (!mongoose.Types.ObjectId.isValid(authorId)) {
     throw new Error('Invalid author ID');
@@ -13,6 +13,7 @@ export const createPost = async (title: string, content: string, tags: string[],
     title,
     content,
     tags,
+    image,
     authorId: new mongoose.Types.ObjectId(authorId)  // Đảm bảo là ObjectId
   });
 

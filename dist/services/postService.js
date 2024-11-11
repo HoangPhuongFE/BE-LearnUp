@@ -16,7 +16,7 @@ exports.searchPosts = exports.deletePost = exports.updatePost = exports.getPosts
 const fuzzy_search_1 = __importDefault(require("fuzzy-search"));
 const Post_1 = __importDefault(require("../models/Post"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const createPost = (title, content, tags, authorId) => __awaiter(void 0, void 0, void 0, function* () {
+const createPost = (title, content, tags, image, authorId) => __awaiter(void 0, void 0, void 0, function* () {
     // Kiểm tra xem authorId có phải là ObjectId hợp lệ không
     if (!mongoose_1.default.Types.ObjectId.isValid(authorId)) {
         throw new Error('Invalid author ID');
@@ -25,6 +25,7 @@ const createPost = (title, content, tags, authorId) => __awaiter(void 0, void 0,
         title,
         content,
         tags,
+        image,
         authorId: new mongoose_1.default.Types.ObjectId(authorId) // Đảm bảo là ObjectId
     });
     yield post.save();
