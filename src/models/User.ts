@@ -11,7 +11,7 @@ export interface IUser extends Document {
   address?: string;
   phone?: string;
   avatar?: string;
-  gender?: 'nam' | 'nu' | 'khac';
+  gender?: 'male' | 'female' | 'orther';
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   premiumStartDate?: Date;
@@ -56,7 +56,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['nam', 'nu', 'khac'],
+    enum: ['male', 'female', 'orther'],
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,

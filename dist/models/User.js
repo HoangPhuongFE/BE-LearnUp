@@ -49,7 +49,7 @@ const userSchema = new mongoose_1.default.Schema({
     },
     gender: {
         type: String,
-        enum: ['nam', 'nu', 'khac'],
+        enum: ['male', 'female', 'orther'],
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
