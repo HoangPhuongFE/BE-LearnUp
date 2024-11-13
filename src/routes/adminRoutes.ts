@@ -3,7 +3,7 @@ import express from 'express';
 import {getUsers,
   updateUserRoleAndPermissions,
   deleteUser,
-  upgradeToPremium,
+  changeUserRole,
 } from '../controllers/adminController';
 import { protect } from '../middlewares/authMiddleware';
 import { checkPermission } from '../middlewares/permissionMiddleware';
@@ -20,6 +20,6 @@ router.put('/user/:id', protect, checkPermission('manage_users'), updateUserRole
 router.delete('/user/:id', protect, checkPermission('manage_users'), deleteUser);
 
 // Nâng cấp tài khoản từ free lên premium
-router.put('/user/:id/upgrade', protect, checkPermission('manage_users'), upgradeToPremium);
+router.put('/user/:id/role', protect, checkPermission('manage_users'), changeUserRole);
 
 export default router;

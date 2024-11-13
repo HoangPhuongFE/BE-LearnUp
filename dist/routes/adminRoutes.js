@@ -15,5 +15,5 @@ router.put('/user/:id', authMiddleware_1.protect, (0, permissionMiddleware_1.che
 // Xóa người dùng
 router.delete('/user/:id', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_users'), adminController_1.deleteUser);
 // Nâng cấp tài khoản từ free lên premium
-router.put('/user/:id/upgrade', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_users'), adminController_1.upgradeToPremium);
+router.put('/user/:id/role', authMiddleware_1.protect, (0, permissionMiddleware_1.checkPermission)('manage_users'), adminController_1.changeUserRole);
 exports.default = router;

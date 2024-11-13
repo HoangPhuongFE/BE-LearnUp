@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upgradeToPremium = exports.deleteUser = exports.updateUserRoleAndPermissions = exports.getUsers = void 0;
+exports.changeUserRole = exports.deleteUser = exports.updateUserRoleAndPermissions = exports.getUsers = void 0;
 const User_1 = __importDefault(require("../models/User"));
 // controllers/adminController.ts
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -90,40 +90,56 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
-const upgradeToPremium = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params; // ID của người dùng
-    try {
-        const user = yield User_1.default.findById(id);
-        if (!user)
-            return res.status(404).json({ message: 'Người dùng không tồn tại' });
-        // Cập nhật role thành member_premium
-        user.role = 'member_premium';
-        // Lưu ngày bắt đầu và tính toán ngày hết hạn là 30 ngày kể từ ngày nâng cấp
-        const premiumStartDate = new Date();
-        const premiumEndDate = new Date();
-        premiumEndDate.setDate(premiumEndDate.getDate() + 30);
+const updateUserRole = (id, newRole, premiumStartDate, premiumEndDate) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield User_1.default.findById(id);
+    if (!user)
+        throw new Error('Người dùng không tồn tại');
+    user.role = newRole;
+    if (newRole === 'member_premium') {
         user.premiumStartDate = premiumStartDate;
         user.premiumEndDate = premiumEndDate;
-        yield user.save();
+    }
+    else {
+        user.premiumStartDate = undefined;
+        user.premiumEndDate = undefined;
+    }
+    // Nếu người dùng được chuyển thành member_free thì xóa hết quyền
+    if (newRole === 'member_free') {
+        user.permissions = [];
+    }
+    yield user.save();
+    return user;
+});
+const changeUserRole = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { role } = req.body;
+    try {
+        let premiumStartDate, premiumEndDate;
+        if (role === 'member_premium') {
+            premiumStartDate = new Date();
+            premiumEndDate = new Date();
+            premiumEndDate.setDate(premiumEndDate.getDate() + 30);
+        }
+        const user = yield updateUserRole(id, role, premiumStartDate, premiumEndDate);
         res.status(200).json({
-            message: 'Nâng cấp tài khoản thành công, tài khoản sẽ hết hạn sau 30 ngày',
+            message: `Cập nhật vai trò thành công, vai trò hiện tại là ${role}`,
             user: {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                premiumStartDate: user.premiumStartDate, // Gửi thông tin ngày bắt đầu
-                premiumEndDate: user.premiumEndDate, // Gửi thông tin ngày hết hạn về cho admin
+                premiumStartDate: user.premiumStartDate,
+                premiumEndDate: user.premiumEndDate,
             },
         });
     }
     catch (error) {
         if (error instanceof Error) {
-            res.status(500).json({ message: 'Lỗi khi nâng cấp tài khoản', error: error.message });
+            res.status(500).json({ message: 'Lỗi khi cập nhật vai trò', error: error.message });
         }
         else {
             res.status(500).json({ message: 'Đã xảy ra lỗi không xác định' });
         }
     }
 });
-exports.upgradeToPremium = upgradeToPremium;
+exports.changeUserRole = changeUserRole;
