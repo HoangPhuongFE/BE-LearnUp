@@ -156,3 +156,85 @@ export const addCommentWithImageToVideo = async (req: Request, res: Response) =>
     }
   }
 };
+
+
+
+// Tạo bình luận cho Resource
+export const createCommentForResource = async (req: Request, res: Response) => {
+  const { resourceId } = req.params;
+  const { content, images } = req.body;
+  const authorId = req.user?.id;
+
+  
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    const comment = await CommentService.createCommentForResource(resourceId, { 
+      content, 
+      authorId, 
+      images 
+    });
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({ 
+      message: error instanceof Error ? error.message : 'Unknown error occurred' 
+    });
+  }
+};
+// Lấy bình luận theo Resource ID
+export const getCommentsForResource = async (req: Request, res: Response) => {
+  const { resourceId } = req.params;
+
+  try {
+    const comments = await CommentService.getCommentsByResource(resourceId);
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+
+// Cập nhật bình luận
+export const updateCommentForResource = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  try {
+    const updatedComment = await CommentService.updateResourceComment(commentId, content);
+    if (!updatedComment) return res.status(404).json({ message: 'Comment không tồn tại' });
+
+    res.status(200).json(updatedComment);
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+
+// Xóa bình luận
+export const deleteCommentForResource = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+
+  try {
+    const deletedComment = await CommentService.deleteResourceComment(commentId);
+    if (!deletedComment) return res.status(404).json({ message: 'Comment không tồn tại' });
+
+    res.status(200).json({ message: 'Comment đã được xóa' });
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+
+
+export const getAllCommentsForResource = async (req: Request, res: Response) => {
+  const { resourceId } = req.params;
+
+  console.log('Resource ID:', resourceId); // Log resourceId để kiểm tra
+
+  try {
+    const comments = await Comment.find({ resourceId }).populate('authorId', 'name');
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
