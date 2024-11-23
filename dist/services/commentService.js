@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
-const createComment = (postId, authorId, content, images // Thêm images làm tham số tùy chọn
-) => __awaiter(void 0, void 0, void 0, function* () {
+const createComment = (postId_1, authorId_1, content_1, ...args_1) => __awaiter(void 0, [postId_1, authorId_1, content_1, ...args_1], void 0, function* (postId, authorId, content, images = [] // Mặc định là mảng rỗng
+) {
     const newComment = new Comment_1.default({
         postId,
         authorId,
         content,
-        images: images || [], // Nếu không có images, đặt giá trị mặc định là []
+        images,
     });
     return yield newComment.save();
 });

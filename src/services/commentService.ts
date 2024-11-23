@@ -5,17 +5,18 @@ export const createComment = async (
   postId: string,
   authorId: string,
   content: string,
-  images?: string[] // Thêm images làm tham số tùy chọn
+  images: string[] = [] // Mặc định là mảng rỗng
 ) => {
   const newComment = new Comment({
     postId,
     authorId,
     content,
-    images: images || [], // Nếu không có images, đặt giá trị mặc định là []
+    images,
   });
 
   return await newComment.save();
 };
+
 
 // Lấy bình luận theo postId
 export const getCommentsByPost = async (postId: string) => {

@@ -41,6 +41,7 @@ const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
 const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log('Request body:', req.body); // Kiểm tra dữ liệu từ FE
     const { postId } = req.params; // Lấy postId từ URL 
     const { content, images } = req.body; // Lấy nội dung và ảnh từ body của request
     const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Lấy ID của người dùng hiện tại
@@ -57,11 +58,13 @@ exports.createComment = createComment;
 const getCommentsByPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { postId } = req.params;
     try {
-        const comments = yield CommentService.getCommentsByPost(postId);
+        const comments = yield Comment_1.default.find({ postId })
+            .populate('authorId', 'name') // Thêm thông tin tác giả
+            .sort({ createdAt: -1 }); // Sắp xếp mới nhất trước
         res.status(200).json(comments);
     }
     catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+        res.status(500).json({ message: 'Unknown error occurred', error: error instanceof Error ? error.message : 'Unknown error' });
     }
 });
 exports.getCommentsByPost = getCommentsByPost;

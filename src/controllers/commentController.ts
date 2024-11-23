@@ -4,6 +4,7 @@ import Comment from '../models/Comment';
 
 // Tạo bình luận mới
 export const createComment = async (req: Request, res: Response) => {
+  console.log('Request body:', req.body); // Kiểm tra dữ liệu từ FE
   const { postId } = req.params;    // Lấy postId từ URL 
   const { content, images } = req.body;     // Lấy nội dung và ảnh từ body của request
   const authorId = req.user?.id;   // Lấy ID của người dùng hiện tại
@@ -22,12 +23,16 @@ export const getCommentsByPost = async (req: Request, res: Response) => {
   const { postId } = req.params;
 
   try {
-    const comments = await CommentService.getCommentsByPost(postId);
+    const comments = await Comment.find({ postId })
+      .populate('authorId', 'name') // Thêm thông tin tác giả
+      .sort({ createdAt: -1 }); // Sắp xếp mới nhất trước
+
     res.status(200).json(comments);
   } catch (error) {
-    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+    res.status(500).json({ message: 'Unknown error occurred', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 };
+
 
 
 export const replyToComment = async (req: Request, res: Response) => {
