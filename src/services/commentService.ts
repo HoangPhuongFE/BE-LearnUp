@@ -67,19 +67,83 @@ export const createCommentForResource = async (
     throw new Error('Failed to create comment: ' + (error as Error).message);
   }
 };
-
+/*
 
 // Lấy danh sách bình luận theo Resource ID
 export const getCommentsByResource = async (resourceId: string) => {
   return await Comment.find({ resourceId }).populate('authorId', 'name'); // Liên kết với tác giả
 };
+*/
 
-// Cập nhật bình luận
-export const updateResourceComment = async (commentId: string, content: string) => {
-  return await Comment.findByIdAndUpdate(commentId, { content, updatedAt: new Date() }, { new: true });
+// Xóa bình luận và tất cả bình luận con
+export const deleteResourceComment = async (commentId: string) => {
+  // Tìm tất cả các bình luận con liên quan đến commentId
+  const childComments = await Comment.find({ parentCommentId: commentId });
+
+  // Xóa từng bình luận con và các bình luận con của nó (đệ quy)
+  for (const childComment of childComments) {
+    await deleteResourceComment((childComment._id as string).toString());
+  }
+
+  // Cuối cùng xóa bình luận hiện tại (cha)
+  return await Comment.findByIdAndDelete(commentId);
 };
 
-// Xóa bình luận
-export const deleteResourceComment = async (commentId: string) => {
-  return await Comment.findByIdAndDelete(commentId);
+// Cập nhật bình luận theo ID
+export const updateResourceComment = async (commentId: string, content: string) => {
+  return await Comment.findByIdAndUpdate(
+    commentId,
+    { content, updatedAt: new Date() }, // Cập nhật nội dung và thời gian
+    { new: true } // Trả về dữ liệu đã cập nhật
+  );
+};
+
+
+
+
+// Trả lời bình luận cho Resource
+export const replyToCommentForResource = async (
+  resourceId: string,
+  parentCommentId: string,
+  commentData: { content: string; authorId: string; images?: string[] }
+) => {
+  if (!resourceId || !parentCommentId) {
+    throw new Error('Resource ID and Parent Comment ID are required');
+  }
+
+  const replyComment = new Comment({
+    resourceId,
+    parentCommentId,
+    content: commentData.content,
+    authorId: commentData.authorId,
+    images: commentData.images || [],
+  });
+
+  try {
+    return await replyComment.save();
+  } catch (error) {
+    throw new Error('Failed to reply to comment: ' + (error as Error).message);
+  }
+};
+
+// Lấy danh sách bình luận dạng cây cho Resource
+export const getCommentsTreeForResource = async (resourceId: string) => {
+  // Lấy bình luận gốc
+  const rootComments = await Comment.find({ resourceId, parentCommentId: null }).populate('authorId', 'name');
+
+  // Lấy tất cả trả lời
+  const replies = await Comment.find({ resourceId, parentCommentId: { $ne: null } }).populate('authorId', 'name');
+
+  // Xây dựng cây bình luận
+  const commentTree = rootComments.map((comment: any) => {
+    const commentReplies = replies.filter((reply) => reply.parentCommentId?.toString() === comment._id.toString());
+    return { ...comment.toObject(), replies: commentReplies };
+  });
+
+  return commentTree;
+};
+
+// Lấy thông tin bình luận theo ID
+export const getCommentById = async (commentId: string) => {
+  return await Comment.findById(commentId).populate('authorId', 'name role'); // Có thể lấy thêm thông tin người tạo
 };

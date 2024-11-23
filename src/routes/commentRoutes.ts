@@ -12,7 +12,8 @@ import {
     getCommentsForResource,
     updateCommentForResource,
     deleteCommentForResource,
-    getAllCommentsForResource
+    getAllCommentsForResource,
+    replyToCommentForResource,
 } from '../controllers/commentController';
 
 const router = express.Router();
@@ -39,7 +40,7 @@ router.post('/:videoId/comment-with-image', protect, uploadFiles, addCommentWith
 // Tạo bình luận cho Resource
 router.post('/:resourceId/comments', protect, createCommentForResource);
 
-// Lấy danh sách bình luận theo Resource ID
+// Lấy danh sách bình luận dạng cây
 router.get('/:resourceId/comments', protect, getCommentsForResource);
 
 // Cập nhật bình luận
@@ -49,5 +50,8 @@ router.put('/comments/:commentId', protect, updateCommentForResource);
 router.delete('/comments/:commentId', protect, deleteCommentForResource);
 // Lấy tất cả bình luận cho Resource
 router.get('/:resourceId/all-comments', protect, getAllCommentsForResource);
+
+//// Trả lời bình luận cho Resource
+router.post('/:resourceId/comments/:parentCommentId/replies', protect, replyToCommentForResource);
 
 export default router;

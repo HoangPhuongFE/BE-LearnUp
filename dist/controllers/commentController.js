@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.getCommentsByPostOrVideo = exports.createComment = void 0;
+exports.replyToCommentForResource = exports.getAllCommentsForResource = exports.deleteCommentForResource = exports.updateCommentForResource = exports.getCommentsForResource = exports.createCommentForResource = exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.getCommentsByPostOrVideo = exports.createComment = void 0;
 const CommentService = __importStar(require("../services/commentService"));
 const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
@@ -193,3 +193,146 @@ const addCommentWithImageToVideo = (req, res) => __awaiter(void 0, void 0, void 
     }
 });
 exports.addCommentWithImageToVideo = addCommentWithImageToVideo;
+// Tạo bình luận cho Resource
+const createCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { resourceId } = req.params;
+    const { content, images } = req.body;
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        const comment = yield CommentService.createCommentForResource(resourceId, {
+            content,
+            authorId,
+            images
+        });
+        res.status(201).json(comment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
+    }
+});
+exports.createCommentForResource = createCommentForResource;
+/*
+// Lấy bình luận theo Resource ID
+export const getCommentsForResource = async (req: Request, res: Response) => {
+  const { resourceId } = req.params;
+
+  try {
+    const comments = await CommentService.getCommentsByResource(resourceId);
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+*/
+// Lấy danh sách bình luận theo cấu trúc cây
+const getCommentsForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { resourceId } = req.params;
+    try {
+        const comments = yield CommentService.getCommentsTreeForResource(resourceId);
+        res.status(200).json(comments);
+    }
+    catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+    }
+});
+exports.getCommentsForResource = getCommentsForResource;
+// Cập nhật bình luận với kiểm tra quyền
+const updateCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { commentId } = req.params;
+    const { content } = req.body;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // ID người dùng hiện tại
+    const userRole = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role; // Vai trò người dùng (admin hoặc user)
+    if (!content) {
+        return res.status(400).json({ message: 'Content không được để trống' });
+    }
+    try {
+        // Lấy thông tin bình luận
+        const comment = yield CommentService.getCommentById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment không tồn tại' });
+        }
+        // Kiểm tra quyền
+        if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+            return res.status(403).json({ message: 'Không có quyền cập nhật bình luận này' });
+        }
+        // Thực hiện cập nhật
+        const updatedComment = yield CommentService.updateResourceComment(commentId, content);
+        res.status(200).json(updatedComment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.updateCommentForResource = updateCommentForResource;
+// Xóa bình luận với kiểm tra quyền
+const deleteCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { commentId } = req.params;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // ID của người dùng đang đăng nhập
+    const userRole = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role; // Vai trò người dùng (ví dụ: 'admin' hoặc 'user')
+    try {
+        // Lấy thông tin bình luận
+        const comment = yield CommentService.getCommentById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment không tồn tại' });
+        }
+        // Kiểm tra quyền
+        if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+            return res.status(403).json({ message: 'Không có quyền xóa bình luận này' });
+        }
+        // Xóa bình luận (và các bình luận con)
+        const deletedComment = yield CommentService.deleteResourceComment(commentId);
+        res.status(200).json({ message: 'Comment và các trả lời của nó đã được xóa', deletedComment });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.deleteCommentForResource = deleteCommentForResource;
+const getAllCommentsForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { resourceId } = req.params;
+    console.log('Resource ID:', resourceId); // Log resourceId để kiểm tra
+    try {
+        const comments = yield Comment_1.default.find({ resourceId }).populate('authorId', 'name');
+        res.status(200).json(comments);
+    }
+    catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+    }
+});
+exports.getAllCommentsForResource = getAllCommentsForResource;
+// Trả lời bình luận
+const replyToCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { resourceId, parentCommentId } = req.params;
+    const { content, images } = req.body;
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        const replyComment = yield CommentService.replyToCommentForResource(resourceId, parentCommentId, {
+            content,
+            authorId,
+            images,
+        });
+        res.status(201).json(replyComment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.replyToCommentForResource = replyToCommentForResource;
