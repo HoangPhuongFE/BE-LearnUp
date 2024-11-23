@@ -1,14 +1,17 @@
 import Comment from '../models/Comment';
 
 // Tạo bình luận mới
-export const createComment = async (commentData: { postId?: string, videoId?: string, content: string, authorId: string }) => {
-  const { postId, videoId, content, authorId } = commentData;
-
+export const createComment = async (
+  postId: string,
+  authorId: string,
+  content: string,
+  images?: string[] // Thêm images làm tham số tùy chọn
+) => {
   const newComment = new Comment({
     postId,
-    videoId,
-    content,
     authorId,
+    content,
+    images: images || [], // Nếu không có images, đặt giá trị mặc định là []
   });
 
   return await newComment.save();
@@ -18,6 +21,18 @@ export const createComment = async (commentData: { postId?: string, videoId?: st
 export const getCommentsByPost = async (postId: string) => {
   return await Comment.find({ postId }).populate('authorId', 'name');
 };
+export const replyToComment = async (postId: string, parentCommentId: string, authorId: string, content: string, images?: string[]) => {
+  const reply = new Comment({
+    postId,
+    parentCommentId,
+    authorId,
+    content,
+    images: images || [],
+  });
+  return await reply.save();
+};
+
+
 
 // Lấy bình luận theo videoId
 export const getCommentsByVideo = async (videoId: string) => {
@@ -25,12 +40,28 @@ export const getCommentsByVideo = async (videoId: string) => {
 };
 
 // Cập nhật bình luận
-export const updateComment = async (commentId: string, content: string) => {
-  return await Comment.findByIdAndUpdate(commentId, { content }, { new: true });
+export const updateComment = async (commentId: string, content?: string, images?: string[]) => {
+  const updateData: any = {
+    updatedAt: new Date(),
+  };
+
+  if (content) updateData.content = content;
+  if (images) updateData.images = images;
+
+  return await Comment.findByIdAndUpdate(
+    commentId,
+    updateData,
+    { new: true } // Trả về dữ liệu đã cập nhật
+  );
 };
 
-// Xóa bình luận
+
+
 export const deleteComment = async (commentId: string) => {
+  const childComments = await Comment.find({ parentCommentId: commentId });
+  for (const child of childComments as { _id: string }[]) {
+    await deleteComment(child._id.toString());
+  }
   return await Comment.findByIdAndDelete(commentId);
 };
 

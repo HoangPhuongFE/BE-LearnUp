@@ -4,92 +4,101 @@ import Comment from '../models/Comment';
 
 // Tạo bình luận mới
 export const createComment = async (req: Request, res: Response) => {
-  const { content } = req.body;
-  const { postId, videoId } = req.params;  // Lấy cả postId và videoId từ params
+  const { postId } = req.params;    // Lấy postId từ URL 
+  const { content, images } = req.body;     // Lấy nội dung và ảnh từ body của request
+  const authorId = req.user?.id;   // Lấy ID của người dùng hiện tại
+
+  try {
+    const comment = await CommentService.createComment(postId, authorId, content, images);
+    res.status(201).json(comment);    // Trả về thông tin bình luận vừa tạo
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+
+
+// Lấy tất cả bình luận cho một bài viết hoặc video
+export const getCommentsByPost = async (req: Request, res: Response) => {
+  const { postId } = req.params;
+
+  try {
+    const comments = await CommentService.getCommentsByPost(postId);
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+  }
+};
+
+
+export const replyToComment = async (req: Request, res: Response) => {
+  const { postId, parentCommentId } = req.params;
+  const { content, images } = req.body;
   const authorId = req.user?.id;
 
   try {
-    let commentData: any = { content, authorId };
-
-    if (postId) {
-      commentData.postId = postId;
-    } else if (videoId) {
-      commentData.videoId = videoId;
-    } else {
-      return res.status(400).json({ message: 'Cần có postId hoặc videoId' });
-    }
-
-    const comment = await CommentService.createComment(commentData);
-    res.status(201).json(comment);
+    const reply = await CommentService.replyToComment(postId, parentCommentId, authorId, content, images);
+    res.status(201).json(reply);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Error creating comment', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Unknown error occurred' });
-    }
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
   }
 };
 
-// Lấy tất cả bình luận cho một bài viết hoặc video
-export const getCommentsByPostOrVideo = async (req: Request, res: Response) => {
-  const { postId, videoId } = req.params;
-
-  try {
-    let comments;
-    if (postId) {
-      comments = await CommentService.getCommentsByPost(postId);
-    } else if (videoId) {
-      comments = await CommentService.getCommentsByVideo(videoId);
-    } else {
-      return res.status(400).json({ message: 'Cần có postId hoặc videoId' });
-    }
-
-    res.status(200).json(comments);
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Error fetching comments', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Unknown error occurred' });
-    }
-  }
-};
 
 // Cập nhật bình luận
 export const updateComment = async (req: Request, res: Response) => {
   const { commentId } = req.params;
-  const { content } = req.body;
+  const { content, images } = req.body; // Lấy thêm `images` từ request body
+  const userId = req.user?.id; // ID người dùng hiện tại
+  const userRole = req.user?.role; // Vai trò người dùng (admin hoặc user)
 
   try {
-    const updatedComment = await CommentService.updateComment(commentId, content);
-    if (!updatedComment) {
+    // Lấy thông tin bình luận
+    const comment = await CommentService.getCommentById(commentId);
+    if (!comment) {
       return res.status(404).json({ message: 'Comment không tồn tại' });
     }
+
+    // Kiểm tra quyền: Chỉ người tạo hoặc admin mới được cập nhật
+    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+      return res.status(403).json({ message: 'Không có quyền cập nhật bình luận này' });
+    }
+
+    // Thực hiện cập nhật
+    const updatedComment = await CommentService.updateComment(commentId, content, images);
     res.status(200).json(updatedComment);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Error updating comment', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Unknown error occurred' });
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
   }
 };
+
 
 // Xóa bình luận
 export const deleteComment = async (req: Request, res: Response) => {
   const { commentId } = req.params;
+  const userId = req.user?.id; // ID của người dùng hiện tại
+  const userRole = req.user?.role; // Vai trò người dùng (admin hoặc user)
 
   try {
-    const deletedComment = await CommentService.deleteComment(commentId);
-    if (!deletedComment) {
+    // Lấy thông tin bình luận
+    const comment = await CommentService.getCommentById(commentId);
+    if (!comment) {
       return res.status(404).json({ message: 'Comment không tồn tại' });
     }
+
+    // Kiểm tra quyền: Chỉ người tạo hoặc admin mới được xóa
+    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+      return res.status(403).json({ message: 'Không có quyền xóa bình luận này' });
+    }
+
+    // Thực hiện xóa bình luận
+    await CommentService.deleteComment(commentId);
     res.status(200).json({ message: 'Comment đã được xóa thành công' });
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Error deleting comment', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Unknown error occurred' });
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
   }
 };
 

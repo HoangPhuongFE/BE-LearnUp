@@ -12,16 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.getCommentsByPost = exports.createComment = void 0;
+exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
-const createComment = (commentData) => __awaiter(void 0, void 0, void 0, function* () {
-    const { postId, videoId, content, authorId } = commentData;
+const createComment = (postId, authorId, content, images // Thêm images làm tham số tùy chọn
+) => __awaiter(void 0, void 0, void 0, function* () {
     const newComment = new Comment_1.default({
         postId,
-        videoId,
-        content,
         authorId,
+        content,
+        images: images || [], // Nếu không có images, đặt giá trị mặc định là []
     });
     return yield newComment.save();
 });
@@ -31,18 +31,40 @@ const getCommentsByPost = (postId) => __awaiter(void 0, void 0, void 0, function
     return yield Comment_1.default.find({ postId }).populate('authorId', 'name');
 });
 exports.getCommentsByPost = getCommentsByPost;
+const replyToComment = (postId, parentCommentId, authorId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
+    const reply = new Comment_1.default({
+        postId,
+        parentCommentId,
+        authorId,
+        content,
+        images: images || [],
+    });
+    return yield reply.save();
+});
+exports.replyToComment = replyToComment;
 // Lấy bình luận theo videoId
 const getCommentsByVideo = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Comment_1.default.find({ videoId }).populate('authorId', 'name');
 });
 exports.getCommentsByVideo = getCommentsByVideo;
 // Cập nhật bình luận
-const updateComment = (commentId, content) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield Comment_1.default.findByIdAndUpdate(commentId, { content }, { new: true });
+const updateComment = (commentId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
+    const updateData = {
+        updatedAt: new Date(),
+    };
+    if (content)
+        updateData.content = content;
+    if (images)
+        updateData.images = images;
+    return yield Comment_1.default.findByIdAndUpdate(commentId, updateData, { new: true } // Trả về dữ liệu đã cập nhật
+    );
 });
 exports.updateComment = updateComment;
-// Xóa bình luận
 const deleteComment = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
+    const childComments = yield Comment_1.default.find({ parentCommentId: commentId });
+    for (const child of childComments) {
+        yield (0, exports.deleteComment)(child._id.toString());
+    }
     return yield Comment_1.default.findByIdAndDelete(commentId);
 });
 exports.deleteComment = deleteComment;

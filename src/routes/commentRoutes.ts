@@ -3,7 +3,6 @@ import { protect } from '../middlewares/authMiddleware';
 import { uploadFiles } from '../middlewares/uploadMiddleware';
 import {
     createComment,
-    getCommentsByPostOrVideo,
     updateComment,
     deleteComment,
     addCommentWithImage,
@@ -14,17 +13,19 @@ import {
     deleteCommentForResource,
     getAllCommentsForResource,
     replyToCommentForResource,
+    getCommentsByPost,
+    replyToComment,
 } from '../controllers/commentController';
 
 const router = express.Router();
 
 // Routes cho bài viết
 router.post('/posts/:postId/comments', protect, createComment); // Tạo bình luận cho bài viết
-router.get('/posts/:postId/comments', getCommentsByPostOrVideo); // Lấy bình luận cho bài viết
 
-// Routes cho video
-router.post('/videos/:videoId/comments', protect, createComment); // Tạo bình luận cho video
-router.get('/videos/:videoId/comments', getCommentsByPostOrVideo); // Lấy bình luận cho video
+
+router.get('/posts/:postId/comments', getCommentsByPost); // Lấy tất cả comment cho bài viết
+
+router.post('/posts/:postId/comments/:parentCommentId/reply', protect, replyToComment); // Trả lời comment
 
 // Cập nhật và xóa bình luận
 router.put('/:commentId', protect, updateComment); // Cập nhật bình luận
