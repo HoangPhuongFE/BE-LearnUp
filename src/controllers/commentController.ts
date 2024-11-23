@@ -4,16 +4,24 @@ import Comment from '../models/Comment';
 
 // Tạo bình luận mới
 export const createComment = async (req: Request, res: Response) => {
-  console.log('Request body:', req.body); // Kiểm tra dữ liệu từ FE
-  const { postId } = req.params;    // Lấy postId từ URL 
-  const { content, images } = req.body;     // Lấy nội dung và ảnh từ body của request
-  const authorId = req.user?.id;   // Lấy ID của người dùng hiện tại
+  const { postId, content, images } = req.body;
 
   try {
-    const comment = await CommentService.createComment(postId, authorId, content, images);
-    res.status(201).json(comment);    // Trả về thông tin bình luận vừa tạo
+    if (!images || !Array.isArray(images)) {
+      return res.status(400).json({ message: "Images must be an array of URLs" });
+    }
+
+    const comment = new Comment({
+      postId,
+      content,
+      images, // Lưu URL từ FE
+      authorId: req.user?.id,
+    });
+
+    const savedComment = await comment.save();
+    res.status(201).json(savedComment);
   } catch (error) {
-    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+    res.status(500).json({ message: "Error creating comment", error: error instanceof Error ? error.message : 'Unknown error' });
   }
 };
 

@@ -41,16 +41,22 @@ const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
 const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    console.log('Request body:', req.body); // Kiểm tra dữ liệu từ FE
-    const { postId } = req.params; // Lấy postId từ URL 
-    const { content, images } = req.body; // Lấy nội dung và ảnh từ body của request
-    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Lấy ID của người dùng hiện tại
+    const { postId, content, images } = req.body;
     try {
-        const comment = yield CommentService.createComment(postId, authorId, content, images);
-        res.status(201).json(comment); // Trả về thông tin bình luận vừa tạo
+        if (!images || !Array.isArray(images)) {
+            return res.status(400).json({ message: "Images must be an array of URLs" });
+        }
+        const comment = new Comment_1.default({
+            postId,
+            content,
+            images, // Lưu URL từ FE
+            authorId: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id,
+        });
+        const savedComment = yield comment.save();
+        res.status(201).json(savedComment);
     }
     catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error occurred' });
+        res.status(500).json({ message: "Error creating comment", error: error instanceof Error ? error.message : 'Unknown error' });
     }
 });
 exports.createComment = createComment;
