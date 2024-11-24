@@ -29,7 +29,7 @@ const commentSchema = new mongoose_1.Schema({
     resourceId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Resource', required: false },
     authorId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     content: { type: String, required: true },
-    images: [{ type: String, trim: true }],
+    images: { type: [String], trim: true, default: [] },
     parentCommentId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Comment', required: false }, // Thêm trường này
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
