@@ -39,8 +39,8 @@ export class PaymentService {
         orderCode,
         amount: this.PREMIUM_PRICE,
         description,
-        cancelUrl: `${process.env.BE_URL}/payment/cancel`,
-        returnUrl: `${process.env.BE_URL}/payment/success`,
+        cancelUrl: `${process.env.FE_URL}/payment/cancel`,
+        returnUrl: `${process.env.FE_URL}/payment/success`,
         webhookUrl: process.env.PAYOS_WEBHOOK_URL,
         buyerName: user.name,     // Thêm tên người mua
         buyerEmail: user.email,   // Thêm email người mua

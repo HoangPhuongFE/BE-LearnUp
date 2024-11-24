@@ -2,29 +2,58 @@ import { Request, Response } from 'express';
 import * as CommentService from '../services/commentService';
 import Comment from '../models/Comment';
 
-// Tạo bình luận mới
 export const createComment = async (req: Request, res: Response) => {
-  const { postId, content, images } = req.body;
+  const { content, images } = req.body;
+
+  // Log để debug
+  console.log("Raw request body:", req.body);
+  console.log("Content type:", req.headers['content-type']);
+  console.log("Images before processing:", images);
 
   try {
-    if (!images || !Array.isArray(images)) {
-      return res.status(400).json({ message: "Images must be an array of URLs" });
+    // Kiểm tra và xử lý images
+    let processedImages = images;
+    
+    // Nếu images là string (có thể xảy ra khi gửi qua form-data), thử parse nó
+    if (typeof images === 'string') {
+      try {
+        processedImages = JSON.parse(images);
+      } catch {
+        // Nếu không parse được, có thể nó đã là string array
+        processedImages = [images];
+      }
     }
 
-    const comment = new Comment({
-      postId,
+    // Đảm bảo processedImages là array
+    if (!Array.isArray(processedImages)) {
+      processedImages = [processedImages].filter(Boolean);
+    }
+
+    // Làm phẳng array và loại bỏ các giá trị null/undefined/empty
+    processedImages = processedImages
+      .flat()
+      .filter((img: string) => img && typeof img === 'string' && img.trim() !== '');
+
+    console.log("Processed images:", processedImages);
+
+    const comment = await Comment.create({
       content,
-      images, // Lưu URL từ FE
+      images: processedImages,
       authorId: req.user?.id,
+      postId: req.params.postId,
     });
 
-    const savedComment = await comment.save();
-    res.status(201).json(savedComment);
+    console.log("Created comment:", comment);
+    return res.status(201).json(comment);
+
   } catch (error) {
-    res.status(500).json({ message: "Error creating comment", error: error instanceof Error ? error.message : 'Unknown error' });
+    console.error("Error creating comment:", error);
+    return res.status(500).json({ 
+      message: "Error creating comment",
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
-
 
 // Lấy tất cả bình luận cho một bài viết hoặc video
 export const getCommentsByPost = async (req: Request, res: Response) => {

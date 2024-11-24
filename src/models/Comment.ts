@@ -12,15 +12,18 @@ interface IComment extends Document {
 }
 
 const commentSchema = new Schema<IComment>({
+  
   postId: { type: Schema.Types.ObjectId, ref: 'Post', required: false },
   resourceId: { type: Schema.Types.ObjectId, ref: 'Resource', required: false },
   authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
-  images: [{ type: String, trim: true }],
+  images: { type: [String], trim: true, default: [] },
   parentCommentId: { type: Schema.Types.ObjectId, ref: 'Comment', required: false }, // Thêm trường này
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  
 });
 
 const Comment = mongoose.model<IComment>('Comment', commentSchema);
 export default Comment;
+
