@@ -217,4 +217,4 @@ class PaymentService {
 }
 exports.PaymentService = PaymentService;
 PaymentService.payOS = new node_1.default(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY);
-PaymentService.PREMIUM_PRICE = 10000;
+PaymentService.PREMIUM_PRICE = 2000;

@@ -21,6 +21,6 @@ exports.config = {
     },
     // Payment config
     payment: {
-        premiumPrice: Number(process.env.PREMIUM_UPGRADE_PRICE) || 10000
+        premiumPrice: Number(process.env.PREMIUM_UPGRADE_PRICE) || 2000
     }
 };
