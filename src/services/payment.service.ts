@@ -14,7 +14,7 @@ export class PaymentService {
     process.env.PAYOS_CHECKSUM_KEY!
   );
 
-  private static readonly PREMIUM_PRICE = 2000;
+  private static readonly PREMIUM_PRICE = 10000;
 
   static async createUpgradePayment(userId: string): Promise<ServiceResponse<PaymentData>> {
     try {
@@ -39,7 +39,7 @@ export class PaymentService {
         orderCode,
         amount: this.PREMIUM_PRICE,
         description,
-        cancelUrl: `${process.env.FE_URL}/payment/cancel`,
+        cancelUrl: `${process.env.FE_URL}/payment/failure`,
         returnUrl: `${process.env.FE_URL}/payment/success`,
         webhookUrl: process.env.PAYOS_WEBHOOK_URL,
         buyerName: user.name,     // Thêm tên người mua
