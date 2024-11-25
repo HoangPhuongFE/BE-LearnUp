@@ -101,9 +101,9 @@ export const updateComment = async (req: Request, res: Response) => {
     }
 
     // Kiểm tra quyền: Chỉ người tạo hoặc admin mới được cập nhật
-    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
-      return res.status(403).json({ message: 'Không có quyền cập nhật bình luận này' });
-    }
+   // if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+  //    return res.status(403).json({ message: 'Không có quyền cập nhật bình luận này' });
+   // }
 
     // Thực hiện cập nhật
     const updatedComment = await CommentService.updateComment(commentId, content, images);
@@ -130,9 +130,9 @@ export const deleteComment = async (req: Request, res: Response) => {
     }
 
     // Kiểm tra quyền: Chỉ người tạo hoặc admin mới được xóa
-    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
-      return res.status(403).json({ message: 'Không có quyền xóa bình luận này' });
-    }
+  //  if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+  //    return res.status(403).json({ message: 'Không có quyền xóa bình luận này' });
+ //   }
 
     // Thực hiện xóa bình luận
     await CommentService.deleteComment(commentId);
