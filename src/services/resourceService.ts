@@ -23,19 +23,14 @@ export const createResource = async (
   return resource;
 };
 
-export const getResources = async (subjectId: string, page = 1, limit = 10) => {
+export const getResources = async (subjectId: string) => {
+  // Tìm kiếm tài liệu dựa trên subjectId mà không phân trang
   const subject = await Subject.findById(subjectId).populate('resources');
   if (!subject) throw new Error('Subject not found');
 
-  const resources = subject.resources;
-  const startIndex = (page - 1) * limit;
-  const paginatedResources = resources.slice(startIndex, startIndex + limit);
-
   return {
-    resources: paginatedResources,
-    totalPages: Math.ceil(resources.length / limit),
-    totalResources: resources.length,
-    currentPage: page,
+    resources: subject.resources,
+    totalResources: subject.resources.length,
   };
 };
 
@@ -53,16 +48,13 @@ export const deleteResource = async (id: string) => {
 export const getResourceById = async (id: string) => {
   return await Resource.findById(id).populate('subject', 'name');  
 };
-export const getAllResources = async (page: number, limit: number) => {
-  const resources = await Resource.find()
-    .skip((page - 1) * limit)  // Phân trang
-    .limit(limit);              // Giới hạn số lượng tài liệu mỗi lần
-
+export const getAllResources = async () => {
+  // Trả về toàn bộ tài liệu mà không phân trang
+  const resources = await Resource.find();
   const totalResources = await Resource.countDocuments();
+
   return {
     resources,
-    totalPages: Math.ceil(totalResources / limit),
     totalResources,
-    currentPage: page,
   };
 };

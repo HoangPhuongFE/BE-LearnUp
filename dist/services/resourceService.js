@@ -27,18 +27,14 @@ const createResource = (subjectId, title, description, fileUrls, type, allowedRo
     return resource;
 });
 exports.createResource = createResource;
-const getResources = (subjectId_1, ...args_1) => __awaiter(void 0, [subjectId_1, ...args_1], void 0, function* (subjectId, page = 1, limit = 10) {
+const getResources = (subjectId) => __awaiter(void 0, void 0, void 0, function* () {
+    // Tìm kiếm tài liệu dựa trên subjectId mà không phân trang
     const subject = yield Subject_1.default.findById(subjectId).populate('resources');
     if (!subject)
         throw new Error('Subject not found');
-    const resources = subject.resources;
-    const startIndex = (page - 1) * limit;
-    const paginatedResources = resources.slice(startIndex, startIndex + limit);
     return {
-        resources: paginatedResources,
-        totalPages: Math.ceil(resources.length / limit),
-        totalResources: resources.length,
-        currentPage: page,
+        resources: subject.resources,
+        totalResources: subject.resources.length,
     };
 });
 exports.getResources = getResources;
@@ -54,16 +50,13 @@ const getResourceById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Resource_1.default.findById(id).populate('subject', 'name');
 });
 exports.getResourceById = getResourceById;
-const getAllResources = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
-    const resources = yield Resource_1.default.find()
-        .skip((page - 1) * limit) // Phân trang
-        .limit(limit); // Giới hạn số lượng tài liệu mỗi lần
+const getAllResources = () => __awaiter(void 0, void 0, void 0, function* () {
+    // Trả về toàn bộ tài liệu mà không phân trang
+    const resources = yield Resource_1.default.find();
     const totalResources = yield Resource_1.default.countDocuments();
     return {
         resources,
-        totalPages: Math.ceil(totalResources / limit),
         totalResources,
-        currentPage: page,
     };
 });
 exports.getAllResources = getAllResources;

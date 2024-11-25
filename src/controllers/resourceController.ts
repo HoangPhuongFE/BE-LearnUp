@@ -33,17 +33,14 @@ export const addResourceToSubject = async (req: Request, res: Response) => {
 // Lấy danh sách tài liệu với phân trang
 export const getResourcesForSubject = async (req: Request, res: Response) => {
   const { subjectId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
 
   try {
-    const resourcesData = await getResourcesService(subjectId, Number(page), Number(limit)); // Gọi service
-
-    res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+    const resourcesData = await getResourcesService(subjectId); // Gọi service mà không truyền page và limit
+    res.status(200).json(resourcesData); // Trả về toàn bộ dữ liệu
   } catch (error) {
     res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }
 };
-
 // Cập nhật tài liệu
 export const updateResource = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -219,11 +216,9 @@ export const getResourceById = async (req: Request, res: Response) => {
 
 
 export const getAllResources = async (req: Request, res: Response) => {
-  const { page = 1, limit = 10 } = req.query;
-
   try {
-    const resourcesData = await getAllResourcesService(Number(page), Number(limit)); // Gọi service với phân trang
-    res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+    const resourcesData = await getAllResourcesService(); // Gọi service mà không truyền page và limit
+    res.status(200).json(resourcesData); // Trả về toàn bộ dữ liệu
   } catch (error) {
     res.status(500).json({ message: (error as Error).message }); // Xử lý lỗi
   }

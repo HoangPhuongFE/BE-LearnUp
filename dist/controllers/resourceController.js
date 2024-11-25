@@ -31,10 +31,9 @@ exports.addResourceToSubject = addResourceToSubject;
 // Lấy danh sách tài liệu với phân trang
 const getResourcesForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { subjectId } = req.params;
-    const { page = 1, limit = 10 } = req.query;
     try {
-        const resourcesData = yield (0, resourceService_1.getResources)(subjectId, Number(page), Number(limit)); // Gọi service
-        res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+        const resourcesData = yield (0, resourceService_1.getResources)(subjectId); // Gọi service mà không truyền page và limit
+        res.status(200).json(resourcesData); // Trả về toàn bộ dữ liệu
     }
     catch (error) {
         res.status(500).json({ message: error.message }); // Xử lý lỗi
@@ -203,10 +202,9 @@ const getResourceById = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.getResourceById = getResourceById;
 const getAllResources = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { page = 1, limit = 10 } = req.query;
     try {
-        const resourcesData = yield (0, resourceService_1.getAllResources)(Number(page), Number(limit)); // Gọi service với phân trang
-        res.status(200).json(resourcesData); // Trả về dữ liệu phân trang
+        const resourcesData = yield (0, resourceService_1.getAllResources)(); // Gọi service mà không truyền page và limit
+        res.status(200).json(resourcesData); // Trả về toàn bộ dữ liệu
     }
     catch (error) {
         res.status(500).json({ message: error.message }); // Xử lý lỗi
