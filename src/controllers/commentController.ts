@@ -362,3 +362,110 @@ export const replyToCommentForResource = async (req: Request, res: Response) => 
   }
 };
 
+
+// Tạo bình luận cho Subject
+// Controller: Tạo bình luận cho Subject (môn học)
+export const createCommentSubject = async (req: Request, res: Response) => {
+  const { subjectId } = req.params;  // Lấy subjectId từ params
+  const { content, images } = req.body;  // Lấy nội dung và hình ảnh từ body
+  const authorId = req.user?.id;  // Lấy authorId từ user đã xác thực (middleware protect)
+
+  // Kiểm tra nếu không có nội dung
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    // Tạo comment mới và lưu vào DB
+    const comment = await CommentService.createCommentSubject(subjectId, authorId, content, images);
+    return res.status(201).json(comment);  // Trả về comment vừa tạo
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+// Lấy danh sách bình luận cho Subject
+ // Controller: Lấy danh sách bình luận cho Subject (môn học)
+export const getCommentsBySubject = async (req: Request, res: Response) => {
+  const { subjectId } = req.params;  // Lấy subjectId từ params
+
+  try {
+    // Lấy danh sách bình luận từ DB
+    const comments = await CommentService.getCommentsBySubject(subjectId);
+    return res.status(200).json(comments);  // Trả về danh sách bình luận
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+
+
+// Controller: Cập nhật bình luận cho Subject (môn học)
+export const updateCommentSubject = async (req: Request, res: Response) => {
+  const { commentId } = req.params;  // Lấy commentId từ params
+  const { content, images } = req.body;  // Lấy nội dung và hình ảnh từ body
+
+  try {
+    // Cập nhật bình luận trong DB
+    const updatedComment = await CommentService.updateCommentSubject(commentId, content, images);
+    if (!updatedComment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+    return res.status(200).json(updatedComment);  // Trả về bình luận đã cập nhật
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+
+// Controller: Xóa bình luận cho Subject (môn học)
+export const deleteCommentSubject = async (req: Request, res: Response) => {
+  const { commentId } = req.params;  // Lấy commentId từ params
+
+  try {
+    // Tìm các bình luận con (trả lời) nếu có
+    const comment = await CommentService.deleteCommentSubject(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    return res.status(200).json({ message: 'Comment has been deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+
+// Controller: Trả lời bình luận cho Subject (môn học)
+export const replyToCommentSubject = async (req: Request, res: Response) => {
+  const { subjectId, parentCommentId } = req.params;  // Lấy subjectId và parentCommentId từ params
+  const { content, images } = req.body;  // Lấy nội dung và hình ảnh từ body
+  const authorId = req.user?.id;  // Lấy authorId từ user đã xác thực
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    // Tạo reply và lưu vào DB
+    const replyComment = await CommentService.replyToCommentSubject(subjectId, parentCommentId, authorId, content, images);
+    return res.status(201).json(replyComment);  // Trả về reply đã tạo
+  } catch (error) {
+    console.error('Error replying to comment:', error);
+    return res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};

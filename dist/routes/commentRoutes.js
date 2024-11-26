@@ -31,4 +31,15 @@ router.delete('/comments/:commentId', authMiddleware_1.protect, commentControlle
 router.get('/:resourceId/all-comments', authMiddleware_1.protect, commentController_1.getAllCommentsForResource);
 //// Trả lời bình luận cho Resource
 router.post('/:resourceId/comments/:parentCommentId/replies', authMiddleware_1.protect, commentController_1.replyToCommentForResource);
+// Routes cho Subject 
+// Tạo bình luận cho Subject
+router.post('/subjects/:subjectId', authMiddleware_1.protect, commentController_1.createCommentSubject); // Tạo bình luận cho Subject
+// Lấy tất cả comment cho Subject
+router.get('/subjects/:subjectId', commentController_1.getCommentsBySubject); // Lấy tất cả comment cho Subject
+// Trả lời comment cho Subject
+router.post('/subjects/:subjectId/comments/:parentCommentId/reply', authMiddleware_1.protect, commentController_1.replyToCommentSubject); // Trả lời comment
+// Cập nhật
+router.put('/subjects/comments/:commentId', authMiddleware_1.protect, commentController_1.updateCommentSubject); // Cập nhật bình luận
+// Xóa bình luận cho Subject
+router.delete('/subjects/comments/:commentId', authMiddleware_1.protect, commentController_1.deleteCommentSubject); // Xóa bình luận
 exports.default = router;

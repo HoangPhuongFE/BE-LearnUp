@@ -1,6 +1,6 @@
 import Comment from '../models/Comment';
 
-// Tạo bình luận mới
+// Tạo bình luận mới cho bài viết (postId)
 export const createComment = async (
   postId: string,
   authorId: string,
@@ -18,7 +18,7 @@ export const createComment = async (
 };
 
 
-// Lấy bình luận theo postId
+// Lấy bình luận theo postId (bài viết) 
 export const getCommentsByPost = async (postId: string) => {
   return await Comment.find({ postId }).populate('authorId', 'name');
 };
@@ -35,7 +35,7 @@ export const replyToComment = async (postId: string, parentCommentId: string, au
 
 
 
-// Lấy bình luận theo videoId
+// Lấy bình luận theo videoId  
 export const getCommentsByVideo = async (videoId: string) => {
   return await Comment.find({ videoId }).populate('authorId', 'name');
 };
@@ -179,3 +179,71 @@ export const getCommentsTreeForResource = async (resourceId: string) => {
 export const getCommentById = async (commentId: string) => {
   return await Comment.findById(commentId).populate('authorId', 'name role'); // Có thể lấy thêm thông tin người tạo
 };
+
+
+
+
+
+
+
+// Tạo bình luận cho Subject (môn học)
+export const createCommentSubject = async (
+  subject : string,
+  authorId: string,
+  content: string,
+  images: string[] = [] // Mặc định là mảng rỗng
+) => {
+  const newComment = new Comment({
+    subject,
+    authorId,
+    content,
+    images,
+  });
+
+  return await newComment.save();
+}
+
+// Lấy bình luận theo Subject (môn học)
+export const getCommentsBySubject = async (subject: string) => {
+  return await Comment.find({ subject }).populate('authorId', 'name');
+};
+
+
+// Trả lời bình luận cho Subject
+export const replyToCommentSubject = async (subject: string, parentCommentId: string, authorId: string, content: string, images?: string[]) => {
+  const reply = new Comment({
+    subject,
+    parentCommentId,
+    authorId,
+    content,
+    images: images || [],
+  });
+  return await reply.save();
+}
+
+
+// Cập nhật bình luận cho Subject
+export const updateCommentSubject = async (commentId: string, content?: string, images?: string[]) => {
+  const updateData: any = {
+    updatedAt: new Date(),
+  };
+
+  if (content) updateData.content = content;
+  if (images) updateData.images = images;
+
+  return await Comment.findByIdAndUpdate(
+    commentId,
+    updateData,
+    { new: true } // Trả về dữ liệu đã cập nhật
+  );
+}
+
+
+// Xóa bình luận cho Subject
+export const deleteCommentSubject = async (commentId: string) => {
+  const childComments = await Comment.find({ parentCommentId: commentId });
+  for (const child of childComments as { _id: string }[]) {
+    await deleteComment(child._id.toString());
+  }
+  return await Comment.findByIdAndDelete(commentId);
+}

@@ -15,6 +15,13 @@ import {
     replyToCommentForResource,
     getCommentsByPost,
     replyToComment,
+    createCommentSubject,
+    getCommentsBySubject,
+    replyToCommentSubject,
+    updateCommentSubject,
+    deleteCommentSubject,
+
+
 } from '../controllers/commentController';
 
 const router = express.Router();
@@ -54,5 +61,32 @@ router.get('/:resourceId/all-comments', protect, getAllCommentsForResource);
 
 //// Trả lời bình luận cho Resource
 router.post('/:resourceId/comments/:parentCommentId/replies', protect, replyToCommentForResource);
+
+
+
+// Routes cho Subject 
+// Tạo bình luận cho Subject
+router.post('/subjects/:subjectId', protect, createCommentSubject); // Tạo bình luận cho Subject
+
+// Lấy tất cả comment cho Subject
+router.get('/subjects/:subjectId', getCommentsBySubject); // Lấy tất cả comment cho Subject
+
+// Trả lời comment cho Subject
+router.post('/subjects/:subjectId/comments/:parentCommentId/reply', protect, replyToCommentSubject); // Trả lời comment
+
+// Cập nhật
+router.put('/subjects/comments/:commentId', protect, updateCommentSubject); // Cập nhật bình luận
+
+// Xóa bình luận cho Subject
+router.delete('/subjects/comments/:commentId', protect, deleteCommentSubject); // Xóa bình luận
+
+
+
+
+
+
+
+
+
 
 export default router;

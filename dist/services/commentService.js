@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
+exports.deleteCommentSubject = exports.updateCommentSubject = exports.replyToCommentSubject = exports.getCommentsBySubject = exports.createCommentSubject = exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const Comment_1 = __importDefault(require("../models/Comment"));
-// Tạo bình luận mới
+// Tạo bình luận mới cho bài viết (postId)
 const createComment = (postId_1, authorId_1, content_1, ...args_1) => __awaiter(void 0, [postId_1, authorId_1, content_1, ...args_1], void 0, function* (postId, authorId, content, images = [] // Mặc định là mảng rỗng
 ) {
     const newComment = new Comment_1.default({
@@ -26,7 +26,7 @@ const createComment = (postId_1, authorId_1, content_1, ...args_1) => __awaiter(
     return yield newComment.save();
 });
 exports.createComment = createComment;
-// Lấy bình luận theo postId
+// Lấy bình luận theo postId (bài viết) 
 const getCommentsByPost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Comment_1.default.find({ postId }).populate('authorId', 'name');
 });
@@ -42,7 +42,7 @@ const replyToComment = (postId, parentCommentId, authorId, content, images) => _
     return yield reply.save();
 });
 exports.replyToComment = replyToComment;
-// Lấy bình luận theo videoId
+// Lấy bình luận theo videoId  
 const getCommentsByVideo = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Comment_1.default.find({ videoId }).populate('authorId', 'name');
 });
@@ -161,3 +161,54 @@ const getCommentById = (commentId) => __awaiter(void 0, void 0, void 0, function
     return yield Comment_1.default.findById(commentId).populate('authorId', 'name role'); // Có thể lấy thêm thông tin người tạo
 });
 exports.getCommentById = getCommentById;
+// Tạo bình luận cho Subject (môn học)
+const createCommentSubject = (subject_1, authorId_1, content_1, ...args_1) => __awaiter(void 0, [subject_1, authorId_1, content_1, ...args_1], void 0, function* (subject, authorId, content, images = [] // Mặc định là mảng rỗng
+) {
+    const newComment = new Comment_1.default({
+        subject,
+        authorId,
+        content,
+        images,
+    });
+    return yield newComment.save();
+});
+exports.createCommentSubject = createCommentSubject;
+// Lấy bình luận theo Subject (môn học)
+const getCommentsBySubject = (subject) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Comment_1.default.find({ subject }).populate('authorId', 'name');
+});
+exports.getCommentsBySubject = getCommentsBySubject;
+// Trả lời bình luận cho Subject
+const replyToCommentSubject = (subject, parentCommentId, authorId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
+    const reply = new Comment_1.default({
+        subject,
+        parentCommentId,
+        authorId,
+        content,
+        images: images || [],
+    });
+    return yield reply.save();
+});
+exports.replyToCommentSubject = replyToCommentSubject;
+// Cập nhật bình luận cho Subject
+const updateCommentSubject = (commentId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
+    const updateData = {
+        updatedAt: new Date(),
+    };
+    if (content)
+        updateData.content = content;
+    if (images)
+        updateData.images = images;
+    return yield Comment_1.default.findByIdAndUpdate(commentId, updateData, { new: true } // Trả về dữ liệu đã cập nhật
+    );
+});
+exports.updateCommentSubject = updateCommentSubject;
+// Xóa bình luận cho Subject
+const deleteCommentSubject = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
+    const childComments = yield Comment_1.default.find({ parentCommentId: commentId });
+    for (const child of childComments) {
+        yield (0, exports.deleteComment)(child._id.toString());
+    }
+    return yield Comment_1.default.findByIdAndDelete(commentId);
+});
+exports.deleteCommentSubject = deleteCommentSubject;

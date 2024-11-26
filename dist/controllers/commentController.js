@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replyToCommentForResource = exports.getAllCommentsForResource = exports.deleteCommentForResource = exports.updateCommentForResource = exports.getCommentsForResource = exports.createCommentForResource = exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
+exports.replyToCommentSubject = exports.deleteCommentSubject = exports.updateCommentSubject = exports.getCommentsBySubject = exports.createCommentSubject = exports.replyToCommentForResource = exports.getAllCommentsForResource = exports.deleteCommentForResource = exports.updateCommentForResource = exports.getCommentsForResource = exports.createCommentForResource = exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const CommentService = __importStar(require("../services/commentService"));
 const Comment_1 = __importDefault(require("../models/Comment"));
 const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -369,3 +369,105 @@ const replyToCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.replyToCommentForResource = replyToCommentForResource;
+// Tạo bình luận cho Subject
+// Controller: Tạo bình luận cho Subject (môn học)
+const createCommentSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { subjectId } = req.params; // Lấy subjectId từ params
+    const { content, images } = req.body; // Lấy nội dung và hình ảnh từ body
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Lấy authorId từ user đã xác thực (middleware protect)
+    // Kiểm tra nếu không có nội dung
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        // Tạo comment mới và lưu vào DB
+        const comment = yield CommentService.createCommentSubject(subjectId, authorId, content, images);
+        return res.status(201).json(comment); // Trả về comment vừa tạo
+    }
+    catch (error) {
+        console.error('Error creating comment:', error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.createCommentSubject = createCommentSubject;
+// Lấy danh sách bình luận cho Subject
+// Controller: Lấy danh sách bình luận cho Subject (môn học)
+const getCommentsBySubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subjectId } = req.params; // Lấy subjectId từ params
+    try {
+        // Lấy danh sách bình luận từ DB
+        const comments = yield CommentService.getCommentsBySubject(subjectId);
+        return res.status(200).json(comments); // Trả về danh sách bình luận
+    }
+    catch (error) {
+        console.error('Error fetching comments:', error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.getCommentsBySubject = getCommentsBySubject;
+// Controller: Cập nhật bình luận cho Subject (môn học)
+const updateCommentSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { commentId } = req.params; // Lấy commentId từ params
+    const { content, images } = req.body; // Lấy nội dung và hình ảnh từ body
+    try {
+        // Cập nhật bình luận trong DB
+        const updatedComment = yield CommentService.updateCommentSubject(commentId, content, images);
+        if (!updatedComment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+        return res.status(200).json(updatedComment); // Trả về bình luận đã cập nhật
+    }
+    catch (error) {
+        console.error('Error updating comment:', error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.updateCommentSubject = updateCommentSubject;
+// Controller: Xóa bình luận cho Subject (môn học)
+const deleteCommentSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { commentId } = req.params; // Lấy commentId từ params
+    try {
+        // Tìm các bình luận con (trả lời) nếu có
+        const comment = yield CommentService.deleteCommentSubject(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+        return res.status(200).json({ message: 'Comment has been deleted successfully' });
+    }
+    catch (error) {
+        console.error('Error deleting comment:', error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.deleteCommentSubject = deleteCommentSubject;
+// Controller: Trả lời bình luận cho Subject (môn học)
+const replyToCommentSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { subjectId, parentCommentId } = req.params; // Lấy subjectId và parentCommentId từ params
+    const { content, images } = req.body; // Lấy nội dung và hình ảnh từ body
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Lấy authorId từ user đã xác thực
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        // Tạo reply và lưu vào DB
+        const replyComment = yield CommentService.replyToCommentSubject(subjectId, parentCommentId, authorId, content, images);
+        return res.status(201).json(replyComment); // Trả về reply đã tạo
+    }
+    catch (error) {
+        console.error('Error replying to comment:', error);
+        return res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.replyToCommentSubject = replyToCommentSubject;
