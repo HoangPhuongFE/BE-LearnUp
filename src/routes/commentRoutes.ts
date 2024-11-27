@@ -71,10 +71,10 @@ router.post('/subjects/:subjectId/comments', protect, createCommentForSubject);
 router.get('/subjects/:subjectId/comments', getCommentsForSubject);
 
 // Update a comment for a subject
-router.put('/subjects/:commentId', protect, updateCommentForSubject);
+router.put('/subjects/comments/:commentId', protect, updateCommentForSubject);
 
 // Delete a comment for a subject
-router.delete('/subjects/:commentId', protect, deleteCommentForSubject);
+router.delete('/subjects/comments/:commentId', protect, deleteCommentForSubject);
 
 // Reply to a comment on a subject
 router.post('/subjects/:subjectId/comments/:parentCommentId/replies', protect, replyToCommentForSubject);

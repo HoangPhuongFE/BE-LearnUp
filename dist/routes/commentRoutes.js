@@ -36,9 +36,9 @@ router.post('/subjects/:subjectId/comments', authMiddleware_1.protect, commentCo
 // Get comments for a subject (in tree structure)
 router.get('/subjects/:subjectId/comments', commentController_1.getCommentsForSubject);
 // Update a comment for a subject
-router.put('/subjects/:commentId', authMiddleware_1.protect, commentController_1.updateCommentForSubject);
+router.put('/subjects/comments/:commentId', authMiddleware_1.protect, commentController_1.updateCommentForSubject);
 // Delete a comment for a subject
-router.delete('/subjects/:commentId', authMiddleware_1.protect, commentController_1.deleteCommentForSubject);
+router.delete('/subjects/comments/:commentId', authMiddleware_1.protect, commentController_1.deleteCommentForSubject);
 // Reply to a comment on a subject
 router.post('/subjects/:subjectId/comments/:parentCommentId/replies', authMiddleware_1.protect, commentController_1.replyToCommentForSubject);
 exports.default = router;
