@@ -35,10 +35,7 @@ export const replyToComment = async (postId: string, parentCommentId: string, au
 
 
 
-// Lấy bình luận theo videoId
-export const getCommentsByVideo = async (videoId: string) => {
-  return await Comment.find({ videoId }).populate('authorId', 'name');
-};
+
 
 // Cập nhật bình luận
 export const updateComment = async (commentId: string, content?: string, images?: string[]) => {
@@ -178,4 +175,88 @@ export const getCommentsTreeForResource = async (resourceId: string) => {
 // Lấy thông tin bình luận theo ID
 export const getCommentById = async (commentId: string) => {
   return await Comment.findById(commentId).populate('authorId', 'name role'); // Có thể lấy thêm thông tin người tạo
+};
+
+
+
+// Create a comment for a subject
+export const createCommentForSubject = async (
+  subjectId: string,
+  commentData: { content: string; authorId: string; images?: string[] }
+) => {
+  if (!subjectId) {
+    throw new Error('Subject ID is required');
+  }
+  if (!commentData.content || typeof commentData.content !== 'string') {
+    throw new Error('Content is required and must be a string');
+  }
+  if (!commentData.authorId) {
+    throw new Error('Author ID is required');
+  }
+
+  const comment = new Comment({
+    subjectId,
+    content: commentData.content,
+    authorId: commentData.authorId,
+    images: commentData.images || [],
+  });
+
+  return await comment.save();
+};
+
+// Get comments for a subject
+export const getCommentsBySubject = async (subjectId: string) => {
+  return await Comment.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
+};
+
+// Reply to a comment on a subject
+export const replyToCommentForSubject = async (
+  subjectId: string,
+  parentCommentId: string,
+  commentData: { content: string; authorId: string; images?: string[] }
+) => {
+  if (!subjectId || !parentCommentId) {
+    throw new Error('Subject ID and Parent Comment ID are required');
+  }
+
+  const replyComment = new Comment({
+    subjectId,
+    parentCommentId,
+    content: commentData.content,
+    authorId: commentData.authorId,
+    images: commentData.images || [],
+  });
+
+  return await replyComment.save();
+};
+
+// Update a comment for a subject
+export const updateSubjectComment = async (commentId: string, content: string, images?: string[]) => {
+  const updateData: any = { content, updatedAt: new Date() };
+  if (images) updateData.images = images;
+
+  return await Comment.findByIdAndUpdate(commentId, updateData, { new: true });
+};
+
+// Delete a comment and its replies for a subject
+export const deleteSubjectComment = async (commentId: string) => {
+  const childComments = await Comment.find({ parentCommentId: commentId });
+  for (const child of childComments as { _id: string }[]) {
+    await deleteSubjectComment(child._id.toString());
+  }
+  return await Comment.findByIdAndDelete(commentId);
+};
+
+// Get comments tree for a subject
+export const getCommentsTreeForSubject = async (subjectId: string) => {
+  const rootComments = await Comment.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
+
+  const replies = await Comment.find({ subjectId, parentCommentId: { $ne: null } }).populate('authorId', 'name');
+
+  const commentTree = rootComments.map((comment: any) => {
+    const commentReplies = replies.filter((reply) => reply.parentCommentId?.toString() === comment._id.toString());
+    return { ...comment.toObject(), replies: commentReplies };
+  });
+
+  return commentTree;
 };

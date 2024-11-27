@@ -362,3 +362,121 @@ export const replyToCommentForResource = async (req: Request, res: Response) => 
   }
 };
 
+
+
+// Create a comment for a subject
+export const createCommentForSubject = async (req: Request, res: Response) => {
+  const { subjectId } = req.params;
+  const { content, images } = req.body;
+  const authorId = req.user?.id;
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    const comment = await CommentService.createCommentForSubject(subjectId, {
+      content,
+      authorId,
+      images,
+    });
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+// Get comments for a subject
+export const getCommentsForSubject = async (req: Request, res: Response) => {
+  const { subjectId } = req.params;
+
+  try {
+    const comments = await CommentService.getCommentsTreeForSubject(subjectId);
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+// Update a comment for a subject
+export const updateCommentForSubject = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+  const { content, images } = req.body;
+  const userId = req.user?.id;
+  const userRole = req.user?.role;
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    const comment = await CommentService.getCommentById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to update this comment' });
+    }
+
+    const updatedComment = await CommentService.updateSubjectComment(commentId, content, images);
+    res.status(200).json(updatedComment);
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+// Delete a comment for a subject
+export const deleteCommentForSubject = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+  const userId = req.user?.id;
+  const userRole = req.user?.role;
+
+  try {
+    const comment = await CommentService.getCommentById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to delete this comment' });
+    }
+
+    await CommentService.deleteSubjectComment(commentId);
+    res.status(200).json({ message: 'Comment and its replies have been deleted' });
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};
+
+// Reply to a comment on a subject
+export const replyToCommentForSubject = async (req: Request, res: Response) => {
+  const { subjectId, parentCommentId } = req.params;
+  const { content, images } = req.body;
+  const authorId = req.user?.id;
+
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
+  }
+
+  try {
+    const replyComment = await CommentService.replyToCommentForSubject(subjectId, parentCommentId, {
+      content,
+      authorId,
+      images,
+    });
+    res.status(201).json(replyComment);
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+};

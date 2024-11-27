@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replyToCommentForResource = exports.getAllCommentsForResource = exports.deleteCommentForResource = exports.updateCommentForResource = exports.getCommentsForResource = exports.createCommentForResource = exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
+exports.replyToCommentForSubject = exports.deleteCommentForSubject = exports.updateCommentForSubject = exports.getCommentsForSubject = exports.createCommentForSubject = exports.replyToCommentForResource = exports.getAllCommentsForResource = exports.deleteCommentForResource = exports.updateCommentForResource = exports.getCommentsForResource = exports.createCommentForResource = exports.addCommentWithImageToVideo = exports.addCommentWithImage = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const CommentService = __importStar(require("../services/commentService"));
 const Comment_1 = __importDefault(require("../models/Comment"));
 const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -369,3 +369,117 @@ const replyToCommentForResource = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.replyToCommentForResource = replyToCommentForResource;
+// Create a comment for a subject
+const createCommentForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { subjectId } = req.params;
+    const { content, images } = req.body;
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        const comment = yield CommentService.createCommentForSubject(subjectId, {
+            content,
+            authorId,
+            images,
+        });
+        res.status(201).json(comment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.createCommentForSubject = createCommentForSubject;
+// Get comments for a subject
+const getCommentsForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subjectId } = req.params;
+    try {
+        const comments = yield CommentService.getCommentsTreeForSubject(subjectId);
+        res.status(200).json(comments);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.getCommentsForSubject = getCommentsForSubject;
+// Update a comment for a subject
+const updateCommentForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { commentId } = req.params;
+    const { content, images } = req.body;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const userRole = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        const comment = yield CommentService.getCommentById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+        if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+            return res.status(403).json({ message: 'Unauthorized to update this comment' });
+        }
+        const updatedComment = yield CommentService.updateSubjectComment(commentId, content, images);
+        res.status(200).json(updatedComment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.updateCommentForSubject = updateCommentForSubject;
+// Delete a comment for a subject
+const deleteCommentForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { commentId } = req.params;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const userRole = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
+    try {
+        const comment = yield CommentService.getCommentById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+        if (comment.authorId.toString() !== userId && userRole !== 'admin') {
+            return res.status(403).json({ message: 'Unauthorized to delete this comment' });
+        }
+        yield CommentService.deleteSubjectComment(commentId);
+        res.status(200).json({ message: 'Comment and its replies have been deleted' });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.deleteCommentForSubject = deleteCommentForSubject;
+// Reply to a comment on a subject
+const replyToCommentForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { subjectId, parentCommentId } = req.params;
+    const { content, images } = req.body;
+    const authorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    if (!content) {
+        return res.status(400).json({ message: 'Content is required' });
+    }
+    try {
+        const replyComment = yield CommentService.replyToCommentForSubject(subjectId, parentCommentId, {
+            content,
+            authorId,
+            images,
+        });
+        res.status(201).json(replyComment);
+    }
+    catch (error) {
+        res.status(500).json({
+            message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+    }
+});
+exports.replyToCommentForSubject = replyToCommentForSubject;

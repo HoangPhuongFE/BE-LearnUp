@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.getCommentsByVideo = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
+exports.getCommentsTreeForSubject = exports.deleteSubjectComment = exports.updateSubjectComment = exports.replyToCommentForSubject = exports.getCommentsBySubject = exports.createCommentForSubject = exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
 const createComment = (postId_1, authorId_1, content_1, ...args_1) => __awaiter(void 0, [postId_1, authorId_1, content_1, ...args_1], void 0, function* (postId, authorId, content, images = [] // Mặc định là mảng rỗng
@@ -42,11 +42,6 @@ const replyToComment = (postId, parentCommentId, authorId, content, images) => _
     return yield reply.save();
 });
 exports.replyToComment = replyToComment;
-// Lấy bình luận theo videoId
-const getCommentsByVideo = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield Comment_1.default.find({ videoId }).populate('authorId', 'name');
-});
-exports.getCommentsByVideo = getCommentsByVideo;
 // Cập nhật bình luận
 const updateComment = (commentId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
     const updateData = {
@@ -161,3 +156,71 @@ const getCommentById = (commentId) => __awaiter(void 0, void 0, void 0, function
     return yield Comment_1.default.findById(commentId).populate('authorId', 'name role'); // Có thể lấy thêm thông tin người tạo
 });
 exports.getCommentById = getCommentById;
+// Create a comment for a subject
+const createCommentForSubject = (subjectId, commentData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!subjectId) {
+        throw new Error('Subject ID is required');
+    }
+    if (!commentData.content || typeof commentData.content !== 'string') {
+        throw new Error('Content is required and must be a string');
+    }
+    if (!commentData.authorId) {
+        throw new Error('Author ID is required');
+    }
+    const comment = new Comment_1.default({
+        subjectId,
+        content: commentData.content,
+        authorId: commentData.authorId,
+        images: commentData.images || [],
+    });
+    return yield comment.save();
+});
+exports.createCommentForSubject = createCommentForSubject;
+// Get comments for a subject
+const getCommentsBySubject = (subjectId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Comment_1.default.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
+});
+exports.getCommentsBySubject = getCommentsBySubject;
+// Reply to a comment on a subject
+const replyToCommentForSubject = (subjectId, parentCommentId, commentData) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!subjectId || !parentCommentId) {
+        throw new Error('Subject ID and Parent Comment ID are required');
+    }
+    const replyComment = new Comment_1.default({
+        subjectId,
+        parentCommentId,
+        content: commentData.content,
+        authorId: commentData.authorId,
+        images: commentData.images || [],
+    });
+    return yield replyComment.save();
+});
+exports.replyToCommentForSubject = replyToCommentForSubject;
+// Update a comment for a subject
+const updateSubjectComment = (commentId, content, images) => __awaiter(void 0, void 0, void 0, function* () {
+    const updateData = { content, updatedAt: new Date() };
+    if (images)
+        updateData.images = images;
+    return yield Comment_1.default.findByIdAndUpdate(commentId, updateData, { new: true });
+});
+exports.updateSubjectComment = updateSubjectComment;
+// Delete a comment and its replies for a subject
+const deleteSubjectComment = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
+    const childComments = yield Comment_1.default.find({ parentCommentId: commentId });
+    for (const child of childComments) {
+        yield (0, exports.deleteSubjectComment)(child._id.toString());
+    }
+    return yield Comment_1.default.findByIdAndDelete(commentId);
+});
+exports.deleteSubjectComment = deleteSubjectComment;
+// Get comments tree for a subject
+const getCommentsTreeForSubject = (subjectId) => __awaiter(void 0, void 0, void 0, function* () {
+    const rootComments = yield Comment_1.default.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
+    const replies = yield Comment_1.default.find({ subjectId, parentCommentId: { $ne: null } }).populate('authorId', 'name');
+    const commentTree = rootComments.map((comment) => {
+        const commentReplies = replies.filter((reply) => { var _a; return ((_a = reply.parentCommentId) === null || _a === void 0 ? void 0 : _a.toString()) === comment._id.toString(); });
+        return Object.assign(Object.assign({}, comment.toObject()), { replies: commentReplies });
+    });
+    return commentTree;
+});
+exports.getCommentsTreeForSubject = getCommentsTreeForSubject;

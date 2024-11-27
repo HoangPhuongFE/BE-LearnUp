@@ -15,6 +15,11 @@ import {
     replyToCommentForResource,
     getCommentsByPost,
     replyToComment,
+    createCommentForSubject,
+  getCommentsForSubject,
+  updateCommentForSubject,
+  deleteCommentForSubject,
+  replyToCommentForSubject,
 } from '../controllers/commentController';
 
 const router = express.Router();
@@ -54,5 +59,24 @@ router.get('/:resourceId/all-comments', protect, getAllCommentsForResource);
 
 //// Trả lời bình luận cho Resource
 router.post('/:resourceId/comments/:parentCommentId/replies', protect, replyToCommentForResource);
+
+
+
+
+
+// Create a comment for a subject
+router.post('/subjects/:subjectId/comments', protect, createCommentForSubject);
+
+// Get comments for a subject (in tree structure)
+router.get('/subjects/:subjectId/comments', getCommentsForSubject);
+
+// Update a comment for a subject
+router.put('/subjects/:commentId', protect, updateCommentForSubject);
+
+// Delete a comment for a subject
+router.delete('/subjects/:commentId', protect, deleteCommentForSubject);
+
+// Reply to a comment on a subject
+router.post('/subjects/:subjectId/comments/:parentCommentId/replies', protect, replyToCommentForSubject);
 
 export default router;

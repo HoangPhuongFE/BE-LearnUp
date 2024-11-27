@@ -31,4 +31,14 @@ router.delete('/comments/:commentId', authMiddleware_1.protect, commentControlle
 router.get('/:resourceId/all-comments', authMiddleware_1.protect, commentController_1.getAllCommentsForResource);
 //// Trả lời bình luận cho Resource
 router.post('/:resourceId/comments/:parentCommentId/replies', authMiddleware_1.protect, commentController_1.replyToCommentForResource);
+// Create a comment for a subject
+router.post('/subjects/:subjectId/comments', authMiddleware_1.protect, commentController_1.createCommentForSubject);
+// Get comments for a subject (in tree structure)
+router.get('/subjects/:subjectId/comments', commentController_1.getCommentsForSubject);
+// Update a comment for a subject
+router.put('/subjects/:commentId', authMiddleware_1.protect, commentController_1.updateCommentForSubject);
+// Delete a comment for a subject
+router.delete('/subjects/:commentId', authMiddleware_1.protect, commentController_1.deleteCommentForSubject);
+// Reply to a comment on a subject
+router.post('/subjects/:subjectId/comments/:parentCommentId/replies', authMiddleware_1.protect, commentController_1.replyToCommentForSubject);
 exports.default = router;
