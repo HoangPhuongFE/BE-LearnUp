@@ -7,13 +7,14 @@ export interface AuthRequest extends Request {
   user?: IUser;
 }
 
+// Middleware để bảo vệ route
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   // Bỏ qua xác thực cho yêu cầu OPTIONS (preflight CORS)
   if (req.method === 'OPTIONS') {
     return res.sendStatus(204); // Trả về 204 No Content
   }
 
-  // Đưa ra một danh sách các route mở cho Guest mà không cần xác thực token
+  // Danh sách các route mở cho Guest mà không cần xác thực token
   const guestRoutes = [
     '/api/subjects',        // Cho phép guest xem danh sách môn học
     '/api/subjects/:id',    // Cho phép guest xem thông tin môn học theo id
@@ -32,11 +33,14 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     return res.status(401).json({ message: 'Token không hợp lệ hoặc không có token' });
   }
 
-  token = req.headers.authorization.split(' ')[1]; // Tách token ra khỏi 'Bearer'
+  // Tách token ra khỏi 'Bearer'
+  token = req.headers.authorization.split(' ')[1];
 
   try {
     // Giải mã token để lấy thông tin người dùng
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+    
+    // Tìm người dùng trong cơ sở dữ liệu
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {

@@ -15,12 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
+// Middleware để bảo vệ route
 const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // Bỏ qua xác thực cho yêu cầu OPTIONS (preflight CORS)
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204); // Trả về 204 No Content
     }
-    // Đưa ra một danh sách các route mở cho Guest mà không cần xác thực token
+    // Danh sách các route mở cho Guest mà không cần xác thực token
     const guestRoutes = [
         '/api/subjects', // Cho phép guest xem danh sách môn học
         '/api/subjects/:id', // Cho phép guest xem thông tin môn học theo id
@@ -36,10 +37,12 @@ const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer')) {
         return res.status(401).json({ message: 'Token không hợp lệ hoặc không có token' });
     }
-    token = req.headers.authorization.split(' ')[1]; // Tách token ra khỏi 'Bearer'
+    // Tách token ra khỏi 'Bearer'
+    token = req.headers.authorization.split(' ')[1];
     try {
         // Giải mã token để lấy thông tin người dùng
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        // Tìm người dùng trong cơ sở dữ liệu
         const user = yield User_1.default.findById(decoded.id).select('-password');
         if (!user) {
             return res.status(401).json({ message: 'Người dùng không tồn tại' });
