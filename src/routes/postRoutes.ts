@@ -10,7 +10,7 @@ router.put('/:postId', protect,checkPermission('manage_post'), updatePost);
 router.delete('/:postId', protect,checkPermission('manage_post'), deletePost);
 router.get('/search',  searchPosts);
 
-router.get('/:postId',protect, getPostById);
+router.get('/:postId', getPostById);
 
 
 export default router;

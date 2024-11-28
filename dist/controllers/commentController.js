@@ -397,13 +397,13 @@ exports.createCommentForSubject = createCommentForSubject;
 const getCommentsForSubject = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { subjectId } = req.params;
     try {
-        const comments = yield CommentService.getCommentsTreeForSubject(subjectId);
+        const comments = yield Comment_1.default.find({ subjectId })
+            .populate('authorId', 'name') // Thêm thông tin tác giả
+            .sort({ createdAt: -1 }); // Sắp xếp mới nhất trước
         res.status(200).json(comments);
     }
     catch (error) {
-        res.status(500).json({
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-        });
+        res.status(500).json({ message: 'Unknown error occurred', error: error instanceof Error ? error.message : 'Unknown error' });
     }
 });
 exports.getCommentsForSubject = getCommentsForSubject;

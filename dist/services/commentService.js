@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentsTreeForSubject = exports.deleteSubjectComment = exports.updateSubjectComment = exports.replyToCommentForSubject = exports.getCommentsBySubject = exports.createCommentForSubject = exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
+exports.deleteSubjectComment = exports.updateSubjectComment = exports.replyToCommentForSubject = exports.getCommentsBySubject = exports.createCommentForSubject = exports.getCommentById = exports.getCommentsTreeForResource = exports.replyToCommentForResource = exports.updateResourceComment = exports.deleteResourceComment = exports.createCommentForResource = exports.deleteComment = exports.updateComment = exports.replyToComment = exports.getCommentsByPost = exports.createComment = void 0;
 const Comment_1 = __importDefault(require("../models/Comment"));
 // Tạo bình luận mới
 const createComment = (postId_1, authorId_1, content_1, ...args_1) => __awaiter(void 0, [postId_1, authorId_1, content_1, ...args_1], void 0, function* (postId, authorId, content, images = [] // Mặc định là mảng rỗng
@@ -213,14 +213,3 @@ const deleteSubjectComment = (commentId) => __awaiter(void 0, void 0, void 0, fu
     return yield Comment_1.default.findByIdAndDelete(commentId);
 });
 exports.deleteSubjectComment = deleteSubjectComment;
-// Get comments tree for a subject
-const getCommentsTreeForSubject = (subjectId) => __awaiter(void 0, void 0, void 0, function* () {
-    const rootComments = yield Comment_1.default.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
-    const replies = yield Comment_1.default.find({ subjectId, parentCommentId: { $ne: null } }).populate('authorId', 'name');
-    const commentTree = rootComments.map((comment) => {
-        const commentReplies = replies.filter((reply) => { var _a; return ((_a = reply.parentCommentId) === null || _a === void 0 ? void 0 : _a.toString()) === comment._id.toString(); });
-        return Object.assign(Object.assign({}, comment.toObject()), { replies: commentReplies });
-    });
-    return commentTree;
-});
-exports.getCommentsTreeForSubject = getCommentsTreeForSubject;

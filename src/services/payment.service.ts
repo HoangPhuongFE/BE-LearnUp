@@ -14,7 +14,7 @@ export class PaymentService {
     process.env.PAYOS_CHECKSUM_KEY!
   );
 
-  private static readonly PREMIUM_PRICE = 50000;
+  private static readonly PREMIUM_PRICE = 10000;
 
   static async createUpgradePayment(userId: string): Promise<ServiceResponse<PaymentData>> {
     try {
@@ -80,7 +80,7 @@ export class PaymentService {
   }
 
 
- /* static async handleWebhook(webhookData: any) {
+ static async handleWebhook(webhookData: any) {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -167,9 +167,9 @@ export class PaymentService {
     }
   }
 }
-*/
 
-  
+/**
+// src/services/payment.service.ts
 static async handleWebhook(webhookData: any) {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -231,3 +231,4 @@ static async handleWebhook(webhookData: any) {
     session.endSession();
   }
 }}
+  */

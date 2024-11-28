@@ -15,45 +15,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
-//
 const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // Bỏ qua xác thực cho yêu cầu OPTIONS (preflight CORS)
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204); // Trả về 204 No Content
     }
-    let token;
+    // Đưa ra một danh sách các route mở cho Guest mà không cần xác thực token
+    const guestRoutes = [
+        '/api/subjects', // Cho phép guest xem danh sách môn học
+        '/api/subjects/:id', // Cho phép guest xem thông tin môn học theo id
+        '/api/resources/all-resources', // Cho phép guest xem tất cả tài liệu
+        '/api/resources/:subjectId/resources' // Cho phép guest xem tài liệu của một môn học cụ thể
+    ];
+    // Kiểm tra nếu route hiện tại là một trong những route cho phép Guest truy cập mà không cần token
+    if (guestRoutes.some(route => new RegExp(`^${route.replace(/:id/, '\\w+').replace(/:subjectId/, '\\w+')}$`).test(req.originalUrl))) {
+        return next(); // Cho phép truy cập mà không cần token (dành cho Guest)
+    }
     // Kiểm tra xem token có được truyền trong header Authorization không
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        token = req.headers.authorization.split(' ')[1];
+    let token;
+    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer')) {
+        return res.status(401).json({ message: 'Token không hợp lệ hoặc không có token' });
     }
-    else {
-        return res.status(401).json({ message: 'Không có token, không được phép truy cập' });
-    }
+    token = req.headers.authorization.split(' ')[1]; // Tách token ra khỏi 'Bearer'
     try {
         // Giải mã token để lấy thông tin người dùng
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        // Tìm người dùng dựa trên ID trong token
         const user = yield User_1.default.findById(decoded.id).select('-password');
         if (!user) {
             return res.status(401).json({ message: 'Người dùng không tồn tại' });
         }
-        // Kiểm tra nếu tài khoản là premium và đã hết hạn
-        if (user.role === 'member_premium' && user.premiumEndDate && user.premiumEndDate < new Date()) {
-            // Nếu tài khoản premium đã hết hạn, hạ cấp người dùng về member_free
-            user.role = 'member_free';
-            user.premiumEndDate = undefined;
-            user.premiumStartDate = undefined;
-            yield user.save();
-        }
-        // Gán thông tin người dùng vào request để sử dụng ở các middleware hoặc controller sau
-        req.user = user;
-        next();
+        req.user = user; // Gán thông tin người dùng vào request
+        next(); // Tiếp tục cho phép truy cập nếu có token hợp lệ
     }
     catch (error) {
-        res.status(401).json({ message: 'Phiên đăng nhập đã hết hạn hoặc token không hợp lệ. Vui lòng đăng nhập lại.' });
+        console.error('Token validation failed:', error);
+        res.status(401).json({ message: 'Token không hợp lệ hoặc đã hết hạn.' });
     }
 });
 exports.protect = protect;
+// Middleware xác thực token khác
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];

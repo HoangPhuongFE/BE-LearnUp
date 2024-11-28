@@ -246,17 +246,3 @@ export const deleteSubjectComment = async (commentId: string) => {
   }
   return await Comment.findByIdAndDelete(commentId);
 };
-
-// Get comments tree for a subject
-export const getCommentsTreeForSubject = async (subjectId: string) => {
-  const rootComments = await Comment.find({ subjectId, parentCommentId: null }).populate('authorId', 'name');
-
-  const replies = await Comment.find({ subjectId, parentCommentId: { $ne: null } }).populate('authorId', 'name');
-
-  const commentTree = rootComments.map((comment: any) => {
-    const commentReplies = replies.filter((reply) => reply.parentCommentId?.toString() === comment._id.toString());
-    return { ...comment.toObject(), replies: commentReplies };
-  });
-
-  return commentTree;
-};

@@ -77,122 +77,52 @@ class PaymentService {
             }
         });
     }
-    /* static async handleWebhook(webhookData: any) {
-       const session = await mongoose.startSession();
-       session.startTransaction();
-   
-       try {
-         // Verify webhook data
-         const isValidSignature = this.payOS.verifyPaymentWebhookData(webhookData);
-   
-         if (!isValidSignature) {
-           throw new Error("Invalid webhook signature");
-         }
-   
-         if (webhookData.code === "00") { // Success
-           try {
-             // Update payment status
-             const payment = await Payment.findOneAndUpdate(
-               { orderId: webhookData.data.orderCode.toString() },
-               {
-                 status: "SUCCESS",
-                 paymentData: JSON.stringify(webhookData.data)
-               },
-               { session }
-             );
-   
-             if (!payment) {
-               throw new Error("Payment not found");
-             }
-   
-             // Update user role using userId from payment
-             const user = await User.findByIdAndUpdate(
-               payment.userId,
-               {
-                 role: "member_premium",
-                 premiumStartDate: new Date(),
-                 premiumEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-               },
-               { session, new: true }
-             );
-   
-             if (!user) {
-               throw new Error("User not found");
-             }
-   
-             await session.commitTransaction();
-             return { success: true, message: "Payment processed successfully" };
-           } catch (error) {
-             await session.abortTransaction();
-             throw error;
-           }
-         } else if (webhookData.code === "01") { // Cancel
-           await Payment.findOneAndUpdate(
-             { orderId: webhookData.data.orderCode.toString() },
-             {
-               status: "CANCELLED",
-               paymentData: JSON.stringify(webhookData.data)
-             },
-             { session }
-           );
-   
-           await session.commitTransaction();
-           return { success: true, message: "Payment cancelled" };
-         } else { // Error or other cases
-           await Payment.findOneAndUpdate(
-             { orderId: webhookData.data.orderCode.toString() },
-             {
-               status: "FAILED",
-               paymentData: JSON.stringify(webhookData.data)
-             },
-             { session }
-           );
-   
-           await session.commitTransaction();
-           return { success: true, message: "Payment failed" };
-         }
-   //
-       } catch (error: any) {
-         await session.abortTransaction();
-         console.error("Handle webhook error:", error);
-         return {
-           success: false,
-           message: (error as Error).message
-         };
-       } finally {
-         session.endSession();
-       }
-     }
-   }
-   */
     static handleWebhook(webhookData) {
         return __awaiter(this, void 0, void 0, function* () {
             const session = yield mongoose_1.default.startSession();
             session.startTransaction();
             try {
+                // Verify webhook data
                 const isValidSignature = this.payOS.verifyPaymentWebhookData(webhookData);
                 if (!isValidSignature) {
                     throw new Error("Invalid webhook signature");
                 }
-                if (webhookData.code === "00") { // Thanh toán thành công
-                    yield payment_model_1.Payment.findOneAndUpdate({ orderId: webhookData.data.orderCode.toString() }, {
-                        status: "SUCCESS",
-                        paymentData: JSON.stringify(webhookData.data),
-                        paymentTime: new Date(webhookData.data.paymentTime) // Cập nhật thời gian thanh toán
-                    }, { session });
-                    yield session.commitTransaction();
-                    return { success: true, message: "Payment processed successfully" };
+                if (webhookData.code === "00") { // Success
+                    try {
+                        // Update payment status
+                        const payment = yield payment_model_1.Payment.findOneAndUpdate({ orderId: webhookData.data.orderCode.toString() }, {
+                            status: "SUCCESS",
+                            paymentData: JSON.stringify(webhookData.data)
+                        }, { session });
+                        if (!payment) {
+                            throw new Error("Payment not found");
+                        }
+                        // Update user role using userId from payment
+                        const user = yield User_1.default.findByIdAndUpdate(payment.userId, {
+                            role: "member_premium",
+                            premiumStartDate: new Date(),
+                            premiumEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+                        }, { session, new: true });
+                        if (!user) {
+                            throw new Error("User not found");
+                        }
+                        yield session.commitTransaction();
+                        return { success: true, message: "Payment processed successfully" };
+                    }
+                    catch (error) {
+                        yield session.abortTransaction();
+                        throw error;
+                    }
                 }
-                else if (webhookData.code === "01") { // Giao dịch bị hủy
+                else if (webhookData.code === "01") { // Cancel
                     yield payment_model_1.Payment.findOneAndUpdate({ orderId: webhookData.data.orderCode.toString() }, {
                         status: "CANCELLED",
-                        paymentData: JSON.stringify(webhookData.data),
-                        cancelTime: new Date(webhookData.data.cancelTime) // Cập nhật thời gian hủy
+                        paymentData: JSON.stringify(webhookData.data)
                     }, { session });
                     yield session.commitTransaction();
                     return { success: true, message: "Payment cancelled" };
                 }
-                else { // Lỗi hoặc trạng thái khác
+                else { // Error or other cases
                     yield payment_model_1.Payment.findOneAndUpdate({ orderId: webhookData.data.orderCode.toString() }, {
                         status: "FAILED",
                         paymentData: JSON.stringify(webhookData.data)
@@ -200,10 +130,11 @@ class PaymentService {
                     yield session.commitTransaction();
                     return { success: true, message: "Payment failed" };
                 }
+                //
             }
             catch (error) {
                 yield session.abortTransaction();
-                console.error("Webhook processing error:", error);
+                console.error("Handle webhook error:", error);
                 return {
                     success: false,
                     message: error.message
@@ -217,4 +148,68 @@ class PaymentService {
 }
 exports.PaymentService = PaymentService;
 PaymentService.payOS = new node_1.default(process.env.PAYOS_CLIENT_ID, process.env.PAYOS_API_KEY, process.env.PAYOS_CHECKSUM_KEY);
-PaymentService.PREMIUM_PRICE = 50000;
+PaymentService.PREMIUM_PRICE = 10000;
+/**
+// src/services/payment.service.ts
+static async handleWebhook(webhookData: any) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const isValidSignature = this.payOS.verifyPaymentWebhookData(webhookData);
+
+    if (!isValidSignature) {
+      throw new Error("Invalid webhook signature");
+    }
+
+    if (webhookData.code === "00") { // Thanh toán thành công
+      await Payment.findOneAndUpdate(
+        { orderId: webhookData.data.orderCode.toString() },
+        {
+          status: "SUCCESS",
+          paymentData: JSON.stringify(webhookData.data),
+          paymentTime: new Date(webhookData.data.paymentTime) // Cập nhật thời gian thanh toán
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+      return { success: true, message: "Payment processed successfully" };
+    } else if (webhookData.code === "01") { // Giao dịch bị hủy
+      await Payment.findOneAndUpdate(
+        { orderId: webhookData.data.orderCode.toString() },
+        {
+          status: "CANCELLED",
+          paymentData: JSON.stringify(webhookData.data),
+          cancelTime: new Date(webhookData.data.cancelTime) // Cập nhật thời gian hủy
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+      return { success: true, message: "Payment cancelled" };
+    } else { // Lỗi hoặc trạng thái khác
+      await Payment.findOneAndUpdate(
+        { orderId: webhookData.data.orderCode.toString() },
+        {
+          status: "FAILED",
+          paymentData: JSON.stringify(webhookData.data)
+        },
+        { session }
+      );
+
+      await session.commitTransaction();
+      return { success: true, message: "Payment failed" };
+    }
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Webhook processing error:", error);
+    return {
+      success: false,
+      message: (error as Error).message
+    };
+  } finally {
+    session.endSession();
+  }
+}}
+  */ 
