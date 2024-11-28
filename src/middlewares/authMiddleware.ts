@@ -16,10 +16,7 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
 
   // Danh sách các route mở cho Guest mà không cần xác thực token
   const guestRoutes = [
-    '/api/subjects',        // Cho phép guest xem danh sách môn học
-    '/api/subjects/:id',    // Cho phép guest xem thông tin môn học theo id
     '/api/resources/all-resources', // Cho phép guest xem tất cả tài liệu
-    '/api/resources/:subjectId/resources' // Cho phép guest xem tài liệu của một môn học cụ thể
   ];
 
   // Kiểm tra nếu route hiện tại là một trong những route cho phép Guest truy cập mà không cần token
