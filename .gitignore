@@ -81,3 +81,5 @@ logs/
 src/test/client.js
 
 src/public/
+
+.env
